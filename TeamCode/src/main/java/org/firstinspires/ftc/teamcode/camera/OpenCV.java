@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.camera;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -130,8 +132,8 @@ public class OpenCV extends LinearOpMode {
             // red: (100, 100, 100), (180, 255, 255)
             // blue: Scalar lowerYellow = new Scalar(90, 50, 70);
             //            Scalar upperYellow = new Scalar(128, 255, 255);
-            Scalar lowerYellow = new Scalar(lower, 100, 100);
-            Scalar upperYellow = new Scalar(upper, 255, 255);
+            Scalar lowerYellow = new Scalar(0, 100, 100);
+            Scalar upperYellow = new Scalar(55, 255, 255);
 
 
             Mat yellowMask = new Mat();

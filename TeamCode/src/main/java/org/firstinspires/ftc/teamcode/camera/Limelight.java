@@ -41,7 +41,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.robot.TurtleRobot;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /*
@@ -69,7 +72,12 @@ import java.util.List;
 @TeleOp
 public class Limelight extends LinearOpMode {
 
+    private static final int FOCAL_LENGTH = 1320;
+    private static final double WIDTH = 3.5;
+    double left_command;
+    double right_command;
     private Limelight3A limelight;
+    TurtleRobot robot = new TurtleRobot(this);
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -77,6 +85,8 @@ public class Limelight extends LinearOpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100);
         telemetry.setMsTransmissionInterval(11);
+
+        robot.init(hardwareMap);
 
         limelight.pipelineSwitch(0);
 
@@ -122,17 +132,100 @@ public class Limelight extends LinearOpMode {
                     for (LLResultTypes.ColorResult cr : colorResults) {
                         telemetry.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
                         telemetry.addData("Area", cr.getTargetArea());
-                        telemetry.addData("X width pixels", cr.getTargetXPixels());
-                        telemetry.addData("Y length pixels", cr.getTargetYPixels());
-                        telemetry.addData("X Degrees", cr.getTargetXDegrees());
-                        telemetry.addData("Y Degrees", cr.getTargetYDegrees());
+
+                        /** DISTANCE: **/
+                        double y = 0;
+                        for (List<Double> x: cr.getTargetCorners()) {
+                            y += x.get(0);
+                        }
+                        y /= 2;
+                        telemetry.addData("Width", y);
+                        double distance = FOCAL_LENGTH * WIDTH / y;
+                        telemetry.addData("Distance", distance);
+
+                        /** CLAW ANGLE **/
+                        telemetry.addData("corners", cr.getTargetCorners());
+                        if (cr.getTargetCorners().size() == 4) {
+                            List<List<Double>> corners = cr.getTargetCorners();
+                            List<List<Double>> ogcorners = cr.getTargetCorners();
+                            Collections.sort(corners, Comparator.comparingDouble(point -> point.get(1)));
+
+                            List<Double> point1 = corners.get(0); // smallest y
+                            List<Double> point2 = corners.get(1); // second smallest y
+
+                            double theta;
+                            if (point1.get(0) > point2.get(0)) {
+                                theta = 1;
+                            } else {
+                                theta = -1;
+                            }
+
+                            // Calculate the angle in radians
+                            theta *= Math.atan(Math.abs(point1.get(1) - point2.get(1)) / Math.abs(point1.get(0) - point2.get(0)));
+
+                            // Using distance formula
+                            double dist1 = Math.hypot(point1.get(0) - point2.get(0), point1.get(1) - point2.get(1));
+                            int adjIdx = ogcorners.indexOf(point2);
+                            ++adjIdx;
+                            adjIdx %= 3;
+                            List<Double> adjacentPoint = ogcorners.get(adjIdx);
+                            double dist2 = Math.hypot(point2.get(0) - adjacentPoint.get(0), point2.get(1) - adjacentPoint.get(1));
+
+                            telemetry.addData("dist1", dist1);
+                            telemetry.addData("dist2", dist2);
+
+                            if (Math.abs(dist1 - dist2) >= 50) {
+                                theta += Math.PI / 2; // adding 90 degrees in radians
+                            }
+
+                            if (theta < 0) {
+                                theta += Math.PI;
+                            }
+
+                            if (theta >= Math.PI / 2) {
+                                theta -= Math.PI;
+                            }
+
+                            // Converting angle to degrees for better understanding
+                            double angleInDegrees = Math.toDegrees(theta);
+                            telemetry.addData("Angle of the sample", angleInDegrees);
+                        }
+                        telemetry.update();
+
+                        /** ALIGN TO ANGLE **/
+                        double Kp = -0.1f;
+                        double min_command = 0.05f;
+
+                        if (gamepad1.a)
+                        {
+                            double heading_error = result.getTx();
+                            double steering_adjust = 0.0f;
+                            if (Math.abs(heading_error) > 1.0)
+                            {
+                                if (heading_error < 0)
+                                {
+                                    steering_adjust = Kp*heading_error + min_command;
+                                }
+                                else
+                                {
+                                    steering_adjust = Kp*heading_error - min_command;
+                                }
+                            }
+                            left_command += steering_adjust;
+                            right_command -= steering_adjust;
+                            robot.leftFront.setPower(left_command);
+                            robot.leftBack.setPower(left_command);
+                            robot.rightFront.setPower(right_command);
+                            robot.rightBack.setPower(right_command);
+                        }
                     }
                 }
             } else {
                 telemetry.addData("Limelight", "No data available");
+                telemetry.update();
             }
 
-            telemetry.update();
+
         }
         limelight.stop();
     }

@@ -4,12 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.teleop.Teleop;
 
 public class TurtleRobot {
     /* Public OpMode members. */
@@ -21,15 +20,16 @@ public class TurtleRobot {
     public DcMotor rightSlide = null;
     public ElapsedTime runtime = new ElapsedTime();
     public LinearOpMode myOpMode = null;
-    public CRServo left = null;
-    public CRServo right = null;
-    public CRServo middle = null;
+    public Servo leftHorizontalSlide = null;
+    public Servo rightHorizontalSlide = null;
+    public Servo intake = null;
+    public Servo outtake = null;
+    public Servo topLeft = null;
+    public Servo bottomLeft = null;
+    public Servo topRight = null;
+    public Servo bottomRight = null;
+    public Servo smartServo = null;
     public Servo arm = null;
-    public Servo linear = null;
-    public CRServo rolltop = null;
-    public CRServo plane = null;
-    public CRServo boxServo = null;
-    TouchSensor touch;
     /* local OpMode members. */
     HardwareMap hwMap = null;
     public ElapsedTime period = new ElapsedTime();
@@ -41,6 +41,32 @@ public class TurtleRobot {
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
 
+        /**
+         * Control Hub:
+         * Motors:
+         * 0 - odo
+         * 1 - left slide
+         * 2 - left back
+         * 3 - left front
+         * Servos:
+         * 2 - left horizontal slide
+         * 3 - intake claw
+         * 4 - bottom left
+         * 5 - top left
+         * Expansion Hub:
+         * Motors:
+         * 0 - right back
+         * 1 - right front
+         * 3 - right slide
+         * Servos:
+         * 0 - top right
+         * 1 - bottom right
+         * 2 - smart servo
+         * 3 - arm servo
+         * 4 - outake claw
+         * 5 - right horizontal slide
+        **/
+
         // Save reference to Hardware map
         hwMap = ahwMap;
         // Define and Initialize Motors
@@ -48,18 +74,43 @@ public class TurtleRobot {
         leftBack = hwMap.get(DcMotorEx.class, "leftBack");
         rightFront = hwMap.get(DcMotorEx.class, "rightFront");
         rightBack = hwMap.get(DcMotorEx.class, "rightBack");
+        leftSlide = hwMap.get(DcMotorEx.class, "leftSlide");
+        rightSlide = hwMap.get(DcMotorEx.class, "rightSlide");
+
+        leftHorizontalSlide = hwMap.get(Servo.class, "left_horizontal_slide");
+        rightHorizontalSlide = hwMap.get(Servo.class, "right_horizontal_slide");
+
+        intake = hwMap.get(Servo.class, "intake_claw");
+        outtake = hwMap.get(Servo.class, "outake_claw");
+        topLeft = hwMap.get(Servo.class, "top_servo");
+        topRight = hwMap.get(Servo.class, "top_right");
+        bottomLeft = hwMap.get(Servo.class, "bottom_left");
+        bottomRight = hwMap.get(Servo.class, "bottom_right");
+        smartServo = hwMap.get(Servo.class, "smart_servo");
+        arm = hwMap.get(Servo.class, "arm_servo");
 
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
-        leftBack.setDirection(DcMotorEx.Direction.REVERSE);
+        leftBack.setDirection(DcMotorEx.Direction.FORWARD);
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         rightBack.setDirection(DcMotorEx.Direction.FORWARD);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set all motors to zero power
         leftFront.setPower(0);
         leftBack.setPower(0);
         rightFront.setPower(0);
         rightBack.setPower(0);
-
+        leftSlide.setPower(0);
+        rightSlide.setPower(0);
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
     }

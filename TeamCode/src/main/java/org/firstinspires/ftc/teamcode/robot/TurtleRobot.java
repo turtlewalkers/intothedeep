@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -44,27 +45,27 @@ public class TurtleRobot {
         /**
          * Control Hub:
          * Motors:
-         * 0 - odo
-         * 1 - left slide
-         * 2 - left back
-         * 3 - left front
+             * 0 - odo
+             * 1 - left slide
+             * 2 - left back
+             * 3 - left front
          * Servos:
-         * 2 - left horizontal slide
-         * 3 - intake claw
-         * 4 - bottom left
-         * 5 - top left
+             * 2 - left horizontal slide
+             * 3 - intake claw
+             * 4 - bottom left
+             * 5 - top left
          * Expansion Hub:
          * Motors:
-         * 0 - right back
-         * 1 - right front
-         * 3 - right slide
+             * 0 - right back
+             * 1 - right front
+             * 3 - right slide
          * Servos:
-         * 0 - top right
-         * 1 - bottom right
-         * 2 - smart servo
-         * 3 - arm servo
-         * 4 - outake claw
-         * 5 - right horizontal slide
+             * 0 - top right
+             * 1 - bottom right
+             * 2 - smart servo
+             * 3 - arm servo
+             * 4 - outake claw
+             * 5 - right horizontal slide
         **/
 
         // Save reference to Hardware map
@@ -90,9 +91,11 @@ public class TurtleRobot {
         arm = hwMap.get(Servo.class, "arm_servo");
 
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
-        leftBack.setDirection(DcMotorEx.Direction.FORWARD);
+        leftBack.setDirection(DcMotorEx.Direction.REVERSE);
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         rightBack.setDirection(DcMotorEx.Direction.FORWARD);
+        leftSlide.setDirection(DcMotorEx.Direction.FORWARD);
+        rightSlide.setDirection(DcMotorEx.Direction.REVERSE);
 
         leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -111,6 +114,7 @@ public class TurtleRobot {
         rightBack.setPower(0);
         leftSlide.setPower(0);
         rightSlide.setPower(0);
+
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
     }

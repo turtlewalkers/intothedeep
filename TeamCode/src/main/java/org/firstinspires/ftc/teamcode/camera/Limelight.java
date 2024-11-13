@@ -87,6 +87,8 @@ public class Limelight extends LinearOpMode {
         telemetry.setMsTransmissionInterval(11);
 
         robot.init(hardwareMap);
+        robot.bottomLeft.setPosition(0.1);
+        robot.bottomRight.setPosition(0.1);
 
         limelight.pipelineSwitch(0);
 
@@ -189,6 +191,9 @@ public class Limelight extends LinearOpMode {
                             // Converting angle to degrees for better understanding
                             double angleInDegrees = Math.toDegrees(theta);
                             telemetry.addData("Angle of the sample", angleInDegrees);
+
+                            robot.bottomRight.setPosition(0.8 + theta / Math.PI * 0.1);
+                            robot.bottomLeft.setPosition(0.8 - theta / Math.PI * 0.1);
                         }
                         telemetry.update();
 

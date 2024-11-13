@@ -30,8 +30,8 @@ public class Teleop extends LinearOpMode {
     public static double CLOSEINTAKE = 0.4;
     public static double TOP_OBSERVE = 0.05;
     public static double BOTTOM_OBSERVE = 0.8;
-    public static double TOP_TRANSFER = 0.0;
-    public static double BOTTOM_TRANSFER = 0.0;
+    public static double TOP_TRANSFER = 0.2;
+    public static double BOTTOM_TRANSFER = 0.12;
     public static double TOP_PICK = 0.225;
     public static double BOTTOM_PICK = 0.8;
     public static double BOTTOMINIT = 0.1;
@@ -60,8 +60,8 @@ public class Teleop extends LinearOpMode {
         robot.topRight.setPosition(TOPINIT);
         robot.bottomRight.setPosition(BOTTOMINIT);
         robot.bottomLeft.setPosition(BOTTOMINIT);
-        robot.leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //robot.leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //robot.rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robot.rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         PICKING_UP = 0.85;
@@ -93,7 +93,10 @@ public class Teleop extends LinearOpMode {
             robot.leftHorizontalSlide.setPosition(HORIZONTALSLIDE);
             robot.rightHorizontalSlide.setPosition(HORIZONTALSLIDE);
 
-
+            if (gamepad2.right_stick_y != 0) {
+                robot.leftSlide.setPower(gamepad2.right_stick_y);
+                robot.rightSlide.setPower(gamepad2.right_stick_y);
+            }
             if (gamepad2.b && servolock == false) { //Picks
                 robot.topRight.setPosition(TOP_PICK);
                 robot.topLeft.setPosition(TOP_PICK);
@@ -213,8 +216,8 @@ public class Teleop extends LinearOpMode {
                 robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
                 robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.leftSlide.setPower(0.9);
-                robot.rightSlide.setPower(0.9);
+                robot.leftSlide.setPower(0.5);
+                robot.rightSlide.setPower(0.5);
                 waitForLinearSlide(linearSlideTargetHeight);
             }
         }

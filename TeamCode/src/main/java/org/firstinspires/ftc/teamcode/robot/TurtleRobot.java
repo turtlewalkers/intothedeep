@@ -45,10 +45,10 @@ public class TurtleRobot {
         /**
          * Control Hub:
          * Motors:
-             * 0 - odo
+             * 0 - odo (lateral odo)
              * 1 - left slide
-             * 2 - left back
-             * 3 - left front
+             * 2 - left back (left odo)
+             * 3 - left front (right odo)
          * Servos:
              * 2 - left horizontal slide
              * 3 - intake claw

@@ -52,6 +52,7 @@ public class Teleop extends LinearOpMode {
     public static double PADLEFT = 0.1;
     public static double TOP_SCAN_SUB = 0.05;
     public static double BOTTOM_SCAN_SUB = 0.5;
+    public static double MAX_POWER_SLIDE = 0.5;
     boolean servolock = false;
     public static double SPEC_PICK_SMARTSERVO = 0.41;
     public static double SPEC_PICK_ARMSERVO = 0.17;
@@ -318,6 +319,8 @@ public class Teleop extends LinearOpMode {
                 robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
                 robot.arm.setPosition(TX_PICKUP_ARMSERVO);
                 SLIDE_HEIGHT = 0;
+
+
             }
 
             if (SLIDE_HEIGHT != 0) {
@@ -326,15 +329,18 @@ public class Teleop extends LinearOpMode {
                 double pid = controller.calculate(linearSlidePosition, SLIDE_HEIGHT);
                 double ff = Math.cos(Math.toRadians(SLIDE_HEIGHT / PIDF.ticks_in_degrees)) * PIDF.f;
                 double power = pid + ff;
+
+                power = Math.max(-MAX_POWER_SLIDE, Math.min(power,MAX_POWER_SLIDE));
                 robot.leftSlide.setPower(power);
                 robot.rightSlide.setPower(power);
 
                 telemetry.addData("pos", linearSlidePosition);
                 telemetry.addData("target", SLIDE_HEIGHT);
+                telemetry.addData("power", power);
                 telemetry.update();
             } else {
-                robot.leftSlide.setPower(0.12);
-                robot.rightSlide.setPower(0.12);
+                robot.leftSlide.setPower(0.05);
+                robot.rightSlide.setPower(0.05);
             }
 
 

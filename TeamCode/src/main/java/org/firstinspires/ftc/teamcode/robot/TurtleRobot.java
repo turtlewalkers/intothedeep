@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,7 +21,7 @@ public class TurtleRobot {
     public DcMotor leftSlide = null;
     public DcMotor rightSlide = null;
     public ElapsedTime runtime = new ElapsedTime();
-    public LinearOpMode myOpMode = null;
+    public OpMode myOpMode = null;
     public Servo leftHorizontalSlide = null;
     public Servo rightHorizontalSlide = null;
     public Servo intake = null;
@@ -36,7 +37,7 @@ public class TurtleRobot {
     public ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
-    public TurtleRobot(LinearOpMode opmode) { myOpMode = opmode;
+    public TurtleRobot(OpMode opmode) { myOpMode = opmode;
     }
 
     /* Initialize standard Hardware interfaces */
@@ -46,26 +47,26 @@ public class TurtleRobot {
          * Control Hub:
          * Motors:
              * 0 - odo (lateral odo)
-             * 1 - left slide
-             * 2 - left back (left odo)
-             * 3 - left front (right odo)
+             * 1 - leftSlide
+             * 2 - leftBack (left odo)
+             * 3 - leftFront (right odo)
          * Servos:
-             * 2 - left horizontal slide
-             * 3 - intake claw
-             * 4 - bottom left
-             * 5 - top left
+             * 2 - leftHorizontalSlide
+             * 3 - intake_claw
+             * 4 - bottom_left
+             * 5 - top_servo
          * Expansion Hub:
          * Motors:
-             * 0 - right back
-             * 1 - right front
-             * 3 - right slide
+             * 0 - rightBack
+             * 1 - rightFront
+             * 3 - rightSlide
          * Servos:
-             * 0 - top right
-             * 1 - bottom right
-             * 2 - smart servo
-             * 3 - arm servo
-             * 4 - outake claw
-             * 5 - right horizontal slide
+             * 0 - top_right
+             * 1 - bottom_right
+             * 2 - smart_servo
+             * 3 - arm_servo
+             * 4 - outake_claw
+             * 5 - right_horizontal_slide
         **/
 
         // Save reference to Hardware map

@@ -53,6 +53,7 @@ public class Teleop extends LinearOpMode {
     public static double TOP_SCAN_SUB = 0.05;
     public static double BOTTOM_SCAN_SUB = 0.5;
     public static double MAX_POWER_SLIDE = 0.5;
+    public static boolean GOING_UP = false;
     boolean servolock = false;
     public static double SPEC_PICK_SMARTSERVO = 0.41;
     public static double SPEC_PICK_ARMSERVO = 0.17;
@@ -312,13 +313,15 @@ public class Teleop extends LinearOpMode {
                 SLIDE_HEIGHT = -1250;
                 robot.smartServo.setPosition(BASKET_SMARTSERVO);
                 robot.arm.setPosition(BASKET_ARMSERVO);
+                GOING_UP = true;
                 // continous: -2600
                 // cascading: -850
             }
             if (gamepad1.x) {
                 robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
                 robot.arm.setPosition(TX_PICKUP_ARMSERVO);
-                SLIDE_HEIGHT = 0;
+                SLIDE_HEIGHT = -600;
+                GOING_UP = false;
 
 
             }
@@ -329,8 +332,12 @@ public class Teleop extends LinearOpMode {
                 double pid = controller.calculate(linearSlidePosition, SLIDE_HEIGHT);
                 double ff = Math.cos(Math.toRadians(SLIDE_HEIGHT / PIDF.ticks_in_degrees)) * PIDF.f;
                 double power = pid + ff;
-
-                power = Math.max(-MAX_POWER_SLIDE, Math.min(power,MAX_POWER_SLIDE));
+                if (GOING_UP){
+                    power = Math.max(-MAX_POWER_SLIDE, Math.min(power,MAX_POWER_SLIDE));
+                }
+                else {
+                    power = 0.3;
+                }
                 robot.leftSlide.setPower(power);
                 robot.rightSlide.setPower(power);
 

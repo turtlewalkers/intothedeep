@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.robot.TurtleRobot;
 public class PIDF extends OpMode {
     TurtleRobot robot = new TurtleRobot(this);
     private PIDController controller;
-    public static double p = 0.01, i = 0, d = 0.0001;
-    public static double f = -0.15;
+    public static double p = 0.02, i = 0, d = 0.0001;
+    public static double f = 0.2;
     public static int target = 0;
     public static final double ticks_in_degrees = 537.7;
     @Override
@@ -30,7 +30,7 @@ public class PIDF extends OpMode {
         controller.setPID(p, i, d);
         int linearSlidePosition = robot.leftSlide.getCurrentPosition();
         double pid = controller.calculate(linearSlidePosition, target);
-        double ff = Math.cos(Math.toRadians(target / ticks_in_degrees)) * f;
+        double ff = Math.toRadians(target / ticks_in_degrees) * f;
         double power = pid + ff;
         robot.leftSlide.setPower(power);
         robot.rightSlide.setPower(power);

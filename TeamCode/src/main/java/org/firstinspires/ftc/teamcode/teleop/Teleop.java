@@ -25,9 +25,8 @@ import java.util.List;
 @TeleOp
 public class Teleop extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
-    int SLIDE_HEIGHT = 0;
+    public static int SLIDE_HEIGHT = 0;
     TurtleRobot robot = new TurtleRobot(this);
-    double topPos, bottomPos;
     boolean softlock = true;
     public static double CONSTANT;
     public static double OUTTAKECLAW1 = 1;
@@ -306,38 +305,30 @@ public class Teleop extends LinearOpMode {
             }
 
             if (gamepad1.a) {
-                robot.leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                SLIDE_HEIGHT = -625;
+                robot.smartServo.setPosition(BASKET_SMARTSERVO);
+                robot.arm.setPosition(BASKET_ARMSERVO);
             }
             if (gamepad1.b) {
                 SLIDE_HEIGHT = -1250;
                 robot.smartServo.setPosition(BASKET_SMARTSERVO);
                 robot.arm.setPosition(BASKET_ARMSERVO);
-                GOING_UP = true;
-                // continous: -2600
+                // continuous: -2600
                 // cascading: -850
             }
             if (gamepad1.x) {
                 robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
                 robot.arm.setPosition(TX_PICKUP_ARMSERVO);
-                SLIDE_HEIGHT = -600;
-                GOING_UP = false;
-
-
+                SLIDE_HEIGHT = 0;
             }
 
             if (SLIDE_HEIGHT != 0) {
                 controller.setPID(PIDF.p, PIDF.i, PIDF.d);
                 int linearSlidePosition = robot.leftSlide.getCurrentPosition();
                 double pid = controller.calculate(linearSlidePosition, SLIDE_HEIGHT);
-                double ff = Math.cos(Math.toRadians(SLIDE_HEIGHT / PIDF.ticks_in_degrees)) * PIDF.f;
+                double ff = Math.toRadians(SLIDE_HEIGHT / PIDF.ticks_in_degrees) * PIDF.f;
                 double power = pid + ff;
-                if (GOING_UP){
-                    power = Math.max(-MAX_POWER_SLIDE, Math.min(power,MAX_POWER_SLIDE));
-                }
-                else {
-                    power = 0.3;
-                }
+
                 robot.leftSlide.setPower(power);
                 robot.rightSlide.setPower(power);
 
@@ -346,11 +337,9 @@ public class Teleop extends LinearOpMode {
                 telemetry.addData("power", power);
                 telemetry.update();
             } else {
-                robot.leftSlide.setPower(0.05);
-                robot.rightSlide.setPower(0.05);
+                robot.leftSlide.setPower(0.12);
+                robot.rightSlide.setPower(0.12);
             }
-
-
         }
 //        robot.topLeft.setPosition(robot.topLeft.getPosition());
 //        robot.topRight.setPosition(robot.topRight.getPosition());

@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
+import android.util.Log;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -33,17 +38,17 @@ public class Teleop extends LinearOpMode {
     public static double OUTTAKECLAW2 = 0;
     public static double SMARTSERVO1 = 0.6;
     public static double SMARTSERVO2 = 0.15;
-    public static double TX_PICKUP_SMARTSERVO = 0.7;
+    public static double TX_PICKUP_SMARTSERVO = 0.37;
     public static double BASKET_SMARTSERVO = 0.88;
-    public static double BASKET_ARMSERVO = 0.52;
-    public static double TX_PICKUP_ARMSERVO = 0;
+    public static double BASKET_ARMSERVO = 0.88;
+    public static double TX_PICKUP_ARMSERVO = 0.44;
     public static double TOPINIT = 0;
     public static double OPENINTAKE = 1;
     public static double CLOSEINTAKE = 0;
     public static double TOP_OBSERVE = 0.05;
     public static double BOTTOM_OBSERVE = 0.8;
-    public static double TOP_TRANSFER = 0.2;
-    public static double BOTTOM_TRANSFER = 0.12;
+    public static double TOP_TRANSFER = 0.37;
+    public static double BOTTOM_TRANSFER = 0.05;
     public static double TOP_PICK = 0.225;
     public static double BOTTOM_PICK = 0.8;
     public static double BOTTOMINIT = 0.1;
@@ -55,7 +60,7 @@ public class Teleop extends LinearOpMode {
     public static boolean GOING_UP = false;
     boolean servolock = false;
     public static double SPEC_PICK_SMARTSERVO = 0.41;
-    public static double SPEC_PICK_ARMSERVO = 0.17;
+    public static double SPEC_PICK_ARMSERVO = 0.3;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
     double BOTTOM_RIGHT = BOTTOMINIT;
@@ -71,6 +76,7 @@ public class Teleop extends LinearOpMode {
     private static final double WIDTH = 3.5;
     double left_command;
     double right_command;
+    boolean gotoobserve=true;
     private Limelight3A limelight;
 
     @Override
@@ -111,7 +117,7 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("Name", "%s",
                     status.getName());
             telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
-                    status.getTemp(), status.getCpu(),(int)status.getFps());
+                    status.getTemp(), status.getCpu(), (int) status.getFps());
             telemetry.addData("Pipeline", "Index: %d, Type: %s",
                     status.getPipelineIndex(), status.getPipelineType());
 
@@ -129,8 +135,8 @@ public class Teleop extends LinearOpMode {
             robot.rightFront.setPower((y - x - rx) / divisor);
             robot.rightBack.setPower((y + x - rx) / divisor);
 
-            HORIZONTALSLIDE -= gamepad2.left_stick_y / 300;
-            HORIZONTALSLIDE = Math.min(HORIZONTALSLIDE, 0.9);
+            HORIZONTALSLIDE -= gamepad2.left_stick_y / 100      ;
+            HORIZONTALSLIDE = min(HORIZONTALSLIDE, 0.9);
 
             robot.leftHorizontalSlide.setPosition(HORIZONTALSLIDE);
             robot.rightHorizontalSlide.setPosition(HORIZONTALSLIDE);
@@ -139,18 +145,37 @@ public class Teleop extends LinearOpMode {
 //                robot.leftSlide.setPower(gamepad2.right_stick_y);
 //                robot.rightSlide.setPower(gamepad2.right_stick_y);
             }
-            if (gamepad2.b && servolock == false) { //Picks
+            if (gamepad2.b) { //Picks
                 robot.topRight.setPosition(TOP_PICK);
                 robot.topLeft.setPosition(TOP_PICK);
                 sleep(200);
                 robot.intake.setPosition(CLOSEINTAKE);
-            } else if (gamepad2.y && servolock == false) { // Observes
+                gotoobserve=true;
+            }
+            if (gamepad2.y) { // Observes
+                Log.d("OBSERVE", String.valueOf(robot.topRight.getPosition()));
                 robot.topRight.setPosition(TOP_OBSERVE);
                 robot.topLeft.setPosition(TOP_OBSERVE);
                 robot.intake.setPosition(OPENINTAKE);
-                robot.bottomRight.setPosition(BOTTOM_OBSERVE);
-                robot.bottomLeft.setPosition(BOTTOM_OBSERVE);
-                double multiplier = 0.1;
+                if(gotoobserve) {
+                    robot.bottomRight.setPosition(BOTTOM_OBSERVE);
+                    robot.bottomLeft.setPosition(BOTTOM_OBSERVE);
+                    BOTTOM_LEFT = BOTTOM_OBSERVE;
+                    BOTTOM_RIGHT = BOTTOM_OBSERVE;
+                    gotoobserve=false;
+                }
+                double multiplier = 0.01;
+
+                if (gamepad2.right_stick_x != 0) {
+                    BOTTOM_LEFT += gamepad2.right_stick_x * multiplier;
+                    BOTTOM_RIGHT -= gamepad2.right_stick_x * multiplier;
+                }
+
+                BOTTOM_LEFT = min(BOTTOM_LEFT, 0.85);
+                BOTTOM_RIGHT = max(BOTTOM_RIGHT, 0.75);
+
+                robot.bottomRight.setPosition(BOTTOM_RIGHT);
+                robot.bottomLeft.setPosition(BOTTOM_LEFT);
 
                 if (gamepad2.dpad_right && gamepad2.y) {
                     limelight.pipelineSwitch(1);
@@ -242,30 +267,24 @@ public class Teleop extends LinearOpMode {
                         }
                     }
                 }
-
-            } else if (gamepad2.x && servolock == false) { //intake transfer
+            } else if (gamepad2.x) { //intake transfer
                 robot.topRight.setPosition(TOP_TRANSFER);
                 robot.topLeft.setPosition(TOP_TRANSFER);
                 robot.bottomRight.setPosition(BOTTOM_TRANSFER);
                 robot.bottomLeft.setPosition(BOTTOM_TRANSFER);
-            } else if (gamepad2.a && servolock == false) { //scans the submersible
+                gotoobserve=true;
+            } else if (gamepad2.a) { //scans the submersible
                 robot.topRight.setPosition(TOP_SCAN_SUB);
                 robot.topLeft.setPosition(TOP_SCAN_SUB);
                 robot.bottomRight.setPosition(BOTTOM_SCAN_SUB);
                 robot.bottomLeft.setPosition(BOTTOM_SCAN_SUB);
                 robot.intake.setPosition(OPENINTAKE);
+                gotoobserve=true;
             }
 
-            if (gamepad1.left_trigger > 0.1) {
-                servolock = true;
-            }
-            if (gamepad1.right_trigger > 0.1) {
-                servolock = false;
-            }
-
-            if (gamepad2.right_bumper) {
+            if (gamepad2.left_bumper) {
                 robot.intake.setPosition(OPENINTAKE);
-            } else if (gamepad2.left_bumper) {
+            } else if (gamepad2.right_bumper) {
                 robot.intake.setPosition(CLOSEINTAKE);
             }
 
@@ -277,9 +296,9 @@ public class Teleop extends LinearOpMode {
 //                BOTTOM_RIGHT = 0.8;
 //            }
 
-            if (gamepad1.left_bumper) {
+            if (gamepad1.right_bumper) {
                 robot.outtake.setPosition(OUTTAKECLAW1);
-            } else if (gamepad1.right_bumper) {
+            } else if (gamepad1.left_bumper) {
                 robot.outtake.setPosition(OUTTAKECLAW2);
             }
 
@@ -318,28 +337,24 @@ public class Teleop extends LinearOpMode {
             }
             if (gamepad1.x) {
                 robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
-                robot.arm.setPosition(TX_PICKUP_ARMSERVO);
+                robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.05);
                 SLIDE_HEIGHT = 0;
+                robot.outtake.setPosition(OUTTAKECLAW2);
             }
 
-            if (SLIDE_HEIGHT != 0) {
-                controller.setPID(PIDF.p, PIDF.i, PIDF.d);
-                int linearSlidePosition = robot.leftSlide.getCurrentPosition();
-                double pid = controller.calculate(linearSlidePosition, SLIDE_HEIGHT);
-                double ff = Math.toRadians(SLIDE_HEIGHT / PIDF.ticks_in_degrees) * PIDF.f;
-                double power = pid + ff;
+            controller.setPID(PIDF.p, PIDF.i, PIDF.d);
+            int linearSlidePosition = robot.leftSlide.getCurrentPosition();
+            double pid = controller.calculate(linearSlidePosition, SLIDE_HEIGHT);
+            double ff = Math.toRadians(SLIDE_HEIGHT / PIDF.ticks_in_degrees) * PIDF.f;
+            double power = pid + ff;
 
-                robot.leftSlide.setPower(power);
-                robot.rightSlide.setPower(power);
+            robot.leftSlide.setPower(power);
+            robot.rightSlide.setPower(power);
 
-                telemetry.addData("pos", linearSlidePosition);
-                telemetry.addData("target", SLIDE_HEIGHT);
-                telemetry.addData("power", power);
-                telemetry.update();
-            } else {
-                robot.leftSlide.setPower(0.12);
-                robot.rightSlide.setPower(0.12);
-            }
+            telemetry.addData("pos", linearSlidePosition);
+            telemetry.addData("target", SLIDE_HEIGHT);
+            telemetry.addData("power", power);
+            telemetry.update();
         }
 //        robot.topLeft.setPosition(robot.topLeft.getPosition());
 //        robot.topRight.setPosition(robot.topRight.getPosition());

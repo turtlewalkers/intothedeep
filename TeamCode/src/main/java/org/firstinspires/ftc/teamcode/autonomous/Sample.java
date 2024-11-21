@@ -59,7 +59,7 @@ public class Sample extends LinearOpMode {
         path5 = new Path(new BezierCurve(new Point(17, 126, Point.CARTESIAN), new Point(21.5  , 128, Point.CARTESIAN)));
         path5.setConstantHeadingInterpolation(0);
         // third one
-        path6 = new Path(new BezierCurve(new Point(20, 129, Point.CARTESIAN), new Point(23, 125, Point.CARTESIAN)));
+        path6 = new Path(new BezierCurve(new Point(20, 129, Point.CARTESIAN), new Point(21, 130, Point.CARTESIAN)));
         path6.setConstantHeadingInterpolation(Math.PI / 8);
 
         waitForStart();
@@ -108,7 +108,7 @@ public class Sample extends LinearOpMode {
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         robot.smartServo.setPosition(Teleop.TX_PICKUP_SMARTSERVO);
-        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO-0.1);
+        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO+0.05);
         robot.intake.setPosition(Teleop.OPENINTAKE);
 
         sleep(1000);
@@ -179,7 +179,7 @@ public class Sample extends LinearOpMode {
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         robot.smartServo.setPosition(Teleop.TX_PICKUP_SMARTSERVO);
-        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO-0.1);
+        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO+0.05);
 
         sleep(1000);
 
@@ -251,7 +251,7 @@ public class Sample extends LinearOpMode {
         robot.rightHorizontalSlide.setPosition(0);
         waitForLinearSlide(linearSlideTargetHeight);
         robot.smartServo.setPosition(Teleop.TX_PICKUP_SMARTSERVO);
-        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO-0.1);
+        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO+0.05);
 
         sleep(1000);
 

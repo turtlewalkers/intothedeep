@@ -44,4 +44,5 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.20'
+    implementation 'org.ftclib.ftclib:core:2.1.1'
 }

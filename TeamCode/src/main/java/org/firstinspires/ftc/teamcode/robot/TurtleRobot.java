@@ -20,6 +20,7 @@ public class TurtleRobot {
     public  DcMotor leftBack = null;
     public DcMotor leftSlide = null;
     public DcMotor rightSlide = null;
+    public DcMotor actuator = null;
     public ElapsedTime runtime = new ElapsedTime();
     public OpMode myOpMode = null;
     public Servo leftHorizontalSlide = null;
@@ -59,6 +60,7 @@ public class TurtleRobot {
          * Motors:
              * 0 - rightBack
              * 1 - rightFront
+             * 2 - actuator
              * 3 - rightSlide
          * Servos:
              * 0 - top_right
@@ -78,7 +80,7 @@ public class TurtleRobot {
         rightBack = hwMap.get(DcMotorEx.class, "rightBack");
         leftSlide = hwMap.get(DcMotorEx.class, "leftSlide");
         rightSlide = hwMap.get(DcMotorEx.class, "rightSlide");
-
+        actuator = hwMap.get(DcMotorEx.class, "actuator");
         leftHorizontalSlide = hwMap.get(Servo.class, "left_horizontal_slide");
         rightHorizontalSlide = hwMap.get(Servo.class, "right_horizontal_slide");
 

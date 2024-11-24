@@ -10,6 +10,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathBuilder;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Drawing;
 import org.firstinspires.ftc.teamcode.robot.TurtleRobot;
@@ -61,6 +63,19 @@ public class Sample extends LinearOpMode {
         // third one
         path6 = new Path(new BezierCurve(new Point(20, 129, Point.CARTESIAN), new Point(21, 130, Point.CARTESIAN)));
         path6.setConstantHeadingInterpolation(Math.PI / 8);
+
+        PathChain paths = follower.pathBuilder()
+                .addTemporalCallback(0.000002, () -> {
+                    SLIDE_HEIGHT = 0;
+                    robot.leftHorizontalSlide.setPosition(0);
+                    robot.rightHorizontalSlide.setPosition(0);
+                })
+                .addPath(new BezierCurve(new Point(17,126,Point.CARTESIAN), new Point(21.5, 123.5, Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(-Math.PI / 4)
+                .addTemporalCallback(0.3, () -> {
+                    SLIDE_HEIGHT = -1300;
+                })
+        .build();
 
         waitForStart();
 

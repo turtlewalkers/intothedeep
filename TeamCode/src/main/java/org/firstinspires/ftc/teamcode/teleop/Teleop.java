@@ -42,6 +42,8 @@ public class Teleop extends LinearOpMode {
     public static double BASKET_SMARTSERVO = 0.88;
     public static double BASKET_ARMSERVO = 0.88;
     public static double TX_PICKUP_ARMSERVO = 0.44;
+    public static double SPEC_DROP_SMART;
+    public static double SPEC_DROP_ARM;
     public static double TOPINIT = 0;
     public static double OPENINTAKE = 1;
     public static double CLOSEINTAKE = 0;
@@ -65,6 +67,8 @@ public class Teleop extends LinearOpMode {
     double BOTTOM_LEFT = BOTTOMINIT;
     double BOTTOM_RIGHT = BOTTOMINIT;
     double HORIZONTALSLIDE;
+
+    double actuatorPos = 0;
 
     static final double COUNTS_PER_MOTOR_REV = 384.5;
     static final double DRIVE_GEAR_REDUCTION = 1.0;
@@ -141,6 +145,9 @@ public class Teleop extends LinearOpMode {
             robot.leftHorizontalSlide.setPosition(HORIZONTALSLIDE);
             robot.rightHorizontalSlide.setPosition(HORIZONTALSLIDE);
 
+            actuatorPos = gamepad2.right_trigger - gamepad2.left_trigger;
+            robot.actuator.setPower(actuatorPos);
+
             if (gamepad2.right_stick_y != 0) {
 //                robot.leftSlide.setPower(gamepad2.right_stick_y);
 //                robot.rightSlide.setPower(gamepad2.right_stick_y);
@@ -178,11 +185,11 @@ public class Teleop extends LinearOpMode {
                 robot.bottomLeft.setPosition(BOTTOM_LEFT);
 
                 if (gamepad2.dpad_right && gamepad2.y) {
-                    limelight.pipelineSwitch(1);
+                    limelight.pipelineSwitch(1); // blue
                 } if (gamepad2.dpad_up && gamepad2.y) {
-                    limelight.pipelineSwitch(0);
+                    limelight.pipelineSwitch(0); // yellow
                 } if (gamepad2.dpad_down && gamepad2.y) {
-                    limelight.pipelineSwitch(2);
+                    limelight.pipelineSwitch(2); // red
                 }
 
                 if (gamepad2.dpad_left && gamepad2.y) {
@@ -258,8 +265,8 @@ public class Teleop extends LinearOpMode {
                                     double angleInDegrees = Math.toDegrees(theta);
                                     telemetry.addData("Angle of the sample", angleInDegrees);
 
-                                    robot.bottomRight.setPosition(0.8 + theta / Math.PI * 0.1);
-                                    robot.bottomLeft.setPosition(0.8 - theta / Math.PI * 0.1);
+                                    robot.bottomRight.setPosition(0.8 + theta / 90 * 5);
+                                    robot.bottomLeft.setPosition(0.8 - theta / 90 * 5);
                                 }
                                 telemetry.update();
 
@@ -302,11 +309,10 @@ public class Teleop extends LinearOpMode {
                 robot.outtake.setPosition(OUTTAKECLAW2);
             }
 
-            if (gamepad1.dpad_right) {
-                robot.smartServo.setPosition((SMARTSERVO1));
+            if (gamepad1.dpad_right) { // outtake action - pick specimen from wall
+                robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
+                robot.arm.setPosition(SPEC_PICK_ARMSERVO);
             }
-            if (gamepad1.dpad_left) {
-                robot.smartServo.setPosition(SMARTSERVO2);
             }
             if (gamepad1.dpad_down) { // outtake action - pick up from transfer box
                 robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
@@ -319,8 +325,8 @@ public class Teleop extends LinearOpMode {
             }
 
             if (gamepad1.y) { // outtake action - pick specimen from wall
-                robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
-                robot.arm.setPosition(SPEC_PICK_ARMSERVO);
+                robot.smartServo.setPosition(SPEC_DROP_SMART);
+                robot.arm.setPosition(SPEC_DROP_ARM);
             }
 
             if (gamepad1.a) {
@@ -362,4 +368,3 @@ public class Teleop extends LinearOpMode {
 //        robot.bottomRight.setPosition(robot.bottomRight.getPosition());
 
     }
-}

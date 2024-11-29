@@ -55,7 +55,7 @@ public class TurtleRobot {
              * 2 - leftHorizontalSlide
              * 3 - intake_claw
              * 4 - bottom_left
-             * 5 - top_servo
+             * 5 - top_servo (top left)
          * Expansion Hub:
          * Motors:
              * 0 - rightBack

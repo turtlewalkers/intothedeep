@@ -318,6 +318,8 @@ public class Teleop extends LinearOpMode {
             if (gamepad1.dpad_right) { // outtake action - pick specimen from wall
                 robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
                 robot.arm.setPosition(SPEC_PICK_ARMSERVO);
+                SLIDE_HEIGHT = 0;
+                robot.outtake.setPosition(OUTTAKECLAW2);
             }
 
             if (gamepad1.dpad_down) { // outtake action - pick up from transfer box
@@ -331,6 +333,7 @@ public class Teleop extends LinearOpMode {
             }
 
             if (gamepad1.dpad_left) { // outtake action - pick specimen drop
+                SLIDE_HEIGHT = -850;
                 robot.smartServo.setPosition(SPEC_DROP_SMART);
                 robot.arm.setPosition(SPEC_DROP_ARM);
             }
@@ -340,8 +343,6 @@ public class Teleop extends LinearOpMode {
             }
             if (gamepad1.y) {
                 SLIDE_HEIGHT = - 1500;
-                robot.smartServo.setPosition(SPEC_DROP_SMART);
-                robot.arm.setPosition(SPEC_DROP_ARM);
             }
             if (gamepad1.b) {
                 SLIDE_HEIGHT = -2300;
@@ -351,8 +352,8 @@ public class Teleop extends LinearOpMode {
                 // cascading: -850
             }
             if (gamepad1.x) {
-                robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
-                robot.arm.setPosition(TX_PICKUP_ARMSERVO + 0.05);
+                robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
+                robot.arm.setPosition(SPEC_PICK_ARMSERVO);
                 SLIDE_HEIGHT = 0;
                 robot.outtake.setPosition(OUTTAKECLAW2);
             }

@@ -85,9 +85,9 @@ public class ThreeWheelLocalizer extends Localizer {
         hardwareMap = map;
 
         // TODO: replace these with your encoder ports
-        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftBack"));
-        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftFront"));
-        strafeEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "odo"));
+        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightBack"));
+        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "right_actuator"));
+        strafeEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "left_actuator"));
 
         // TODO: reverse any encoders necessary
         leftEncoder.setDirection(Encoder.REVERSE);

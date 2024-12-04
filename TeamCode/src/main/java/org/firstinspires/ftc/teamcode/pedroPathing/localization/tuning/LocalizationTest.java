@@ -58,17 +58,6 @@ public class LocalizationTest extends OpMode {
         leftRear = hardwareMap.get(DcMotorEx.class, leftRearMotorName);
         rightRear = hardwareMap.get(DcMotorEx.class, rightRearMotorName);
         rightFront = hardwareMap.get(DcMotorEx.class, rightFrontMotorName);
-        Servo topLeft = hardwareMap.get(Servo.class, "top_servo");
-        Servo topRight = hardwareMap.get(Servo.class, "top_right");
-        Servo bottomLeft = hardwareMap.get(Servo.class, "bottom_left");
-        Servo bottomRight = hardwareMap.get(Servo.class, "bottom_right");
-        Servo smartServo = hardwareMap.get(Servo.class, "smart_servo");
-
-        topLeft.setPosition(0);
-        topRight.setPosition(0);
-        bottomRight.setPosition(0.1);
-        bottomLeft.setPosition(0.1);
-        smartServo.setPosition(0.15);
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);

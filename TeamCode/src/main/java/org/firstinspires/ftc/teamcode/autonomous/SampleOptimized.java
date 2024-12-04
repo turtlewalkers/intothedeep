@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
@@ -29,6 +30,8 @@ public class SampleOptimized extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         controller = new PIDController(p, i, d);
+        follower = new Follower(hardwareMap);
+        follower.setStartingPose(new Pose(10, 104, 0));
         paths = follower.pathBuilder()
                 .addTemporalCallback(0.000002, () -> {
                     SLIDE_HEIGHT = 0;
@@ -47,7 +50,7 @@ public class SampleOptimized extends LinearOpMode {
                 .setConstantHeadingInterpolation(-Math.PI / 4)
                 .addTemporalCallback(3.5, () -> {
                     robot.outtake.setPosition(0);
-                    robot.topRight.setPosition(Teleop.TOP_OBSERVE);
+                    //robot.topRight.setPosition(Teleop.TOP_OBSERVE);
                     robot.topLeft.setPosition(Teleop.TOP_OBSERVE);
                     robot.intake.setPosition(Teleop.OPENINTAKE);
                     robot.bottomRight.setPosition(Teleop.BOTTOM_OBSERVE);
@@ -68,7 +71,7 @@ public class SampleOptimized extends LinearOpMode {
                     robot.leftHorizontalSlide.setPosition(0.5);
                     robot.rightHorizontalSlide.setPosition(0.5);
                     sleep(300);
-                    robot.topRight.setPosition(Teleop.TOP_PICK);
+                    //robot.topRight.setPosition(Teleop.TOP_PICK);
                     robot.topLeft.setPosition(Teleop.TOP_PICK);
                     robot.bottomRight.setPosition(Teleop.BOTTOM_PICK);
                     robot.bottomLeft.setPosition(Teleop.BOTTOM_PICK);
@@ -77,7 +80,7 @@ public class SampleOptimized extends LinearOpMode {
                     sleep(100);
                     robot.leftHorizontalSlide.setPosition(0);
                     robot.rightHorizontalSlide.setPosition(0);
-                    robot.topRight.setPosition(Teleop.TOP_TRANSFER);
+                    //robot.topRight.setPosition(Teleop.TOP_TRANSFER);
                     robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
                     robot.bottomRight.setPosition(Teleop.BOTTOM_TRANSFER);
                     robot.bottomLeft.setPosition(Teleop.BOTTOM_TRANSFER);

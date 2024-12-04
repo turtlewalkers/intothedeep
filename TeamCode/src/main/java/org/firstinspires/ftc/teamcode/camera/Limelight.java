@@ -32,6 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode.camera;
 
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOM_SCAN_SUB;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.TOP_SCAN_SUB;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
@@ -87,8 +90,9 @@ public class Limelight extends LinearOpMode {
         telemetry.setMsTransmissionInterval(11);
 
         robot.init(hardwareMap);
-        robot.bottomLeft.setPosition(0.1);
-        robot.bottomRight.setPosition(0.1);
+        robot.topLeft.setPosition(TOP_SCAN_SUB);
+        robot.bottomRight.setPosition(BOTTOM_SCAN_SUB);
+        robot.bottomLeft.setPosition(BOTTOM_SCAN_SUB);
 
         limelight.pipelineSwitch(0);
 

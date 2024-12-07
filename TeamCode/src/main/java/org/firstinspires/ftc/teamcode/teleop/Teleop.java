@@ -13,6 +13,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -40,14 +41,14 @@ public class Teleop extends LinearOpMode {
     public static double SMARTSERVO2 = 0.15;
     public static double TX_PICKUP_SMARTSERVO = 0.9;
     public static double HORIZONTALSLIDE = 0;
-    public static double BASKET_SMARTSERVO = 0.1;
+    public static double BASKET_SMARTSERVO = 0.75;
     public static double BASKET_ARMSERVO = 0.5;
     public static double TX_PICKUP_ARMSERVO =  0.07;
-    public static double SPEC_DROP_SMART = 0.45;
+    public static double SPEC_DROP_SMART = 0.5;
     public static double SPEC_DROP_ARM = 0;
     public static double OPENINTAKE = 0.25;
     public static double CLOSEINTAKE = 0.02;
-    public static double TOP_OBSERVE = 0.7;
+    public static double TOP_OBSERVE = 0.6;
     public static double BOTTOM_OBSERVE = 0.85;
     public static double TOP_TRANSFER = 0.58;
     public static double BOTTOM_TRANSFER = 0.15;
@@ -61,11 +62,13 @@ public class Teleop extends LinearOpMode {
     public static double TOPINIT = TOP_TRANSFER;
     public static double HANG;
     boolean servolock = false;
-    public static double SPEC_PICK_SMARTSERVO = 0.9;
+    public static double SPEC_PICK_SMARTSERVO = 0;
     public static double SPEC_PICK_ARMSERVO = 1;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
     double BOTTOM_RIGHT = BOTTOMINIT;
+    public static double OFSETRIGHT = 0.01;
+    public static double OFSETLEFT = -0.02;
 
 
 
@@ -85,6 +88,7 @@ public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
+        ElapsedTime timer = new ElapsedTime();
         PIDController controller = new PIDController(PIDF.p, PIDF.i, PIDF.d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.topLeft.setPosition(TOPINIT);
@@ -155,12 +159,18 @@ public class Teleop extends LinearOpMode {
               robot.leftSlide.setPower(gamepad2.right_stick_y);
               robot.rightSlide.setPower(gamepad2.right_stick_y);
             }
-            if (gamepad2.b) { //Picks
+            if (gamepad2.b) { // Picks
                 robot.topLeft.setPosition(TOP_PICK);
-                sleep(200);
-                robot.intake.setPosition(CLOSEINTAKE);
-                gotoobserve = true;
+                robot.bottomRight.setPosition(robot.bottomRight.getPosition());
+                robot.bottomLeft.setPosition(robot.bottomLeft.getPosition());
+
+                timer.reset();
             }
+
+            if (timer.milliseconds() >= 200 && timer.milliseconds() <= 300) {
+                robot.intake.setPosition(CLOSEINTAKE);
+            }
+
             if (gamepad2.y) { // Observes
                 Log.d("OBSERVE", String.valueOf(robot.topLeft.getPosition()));
                 robot.topLeft.setPosition(TOP_OBSERVE);
@@ -196,12 +206,15 @@ public class Teleop extends LinearOpMode {
 
                 if (gamepad2.dpad_right && gamepad2.y) {
                     limelight.pipelineSwitch(1); // blue
+                    robot.light.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
                 }
                 if (gamepad2.dpad_up&& gamepad2.y) {
-                    limelight.pipelineSwitch(0); // yellow
+                    limelight.pipelineSwitch(0);
+                    robot.light.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW); // yellow
                 }
                 if (gamepad2.dpad_down && gamepad2.y) {
                     limelight.pipelineSwitch(2); // red
+                    robot.light.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
                 }
 
                 if (gamepad2.y && gamepad2.dpad_left) {
@@ -273,12 +286,16 @@ public class Teleop extends LinearOpMode {
                                         theta -= Math.PI;
                                     }
 
+                                    theta = min(theta, 90);
+                                    theta = max(theta, -90);
+
                                     // Converting angle to degrees for better understanding
                                     double angleInDegrees = Math.toDegrees(theta);
                                     telemetry.addData("Angle of the sample", angleInDegrees);
 
                                     robot.bottomRight.setPosition(BOTTOM_OBSERVE + theta / 90 * 5);
                                     robot.bottomLeft.setPosition(BOTTOM_OBSERVE - theta / 90 * 5);
+                                    robot.light.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                                 }
                                 telemetry.update();
 
@@ -290,8 +307,8 @@ public class Teleop extends LinearOpMode {
             if (gamepad2.x) {
                 //robot.topRight.setPosition(TOP_TRANSFER);
                 robot.topLeft.setPosition(TOP_TRANSFER);
-                robot.bottomRight.setPosition(BOTTOM_TRANSFER);
-                robot.bottomLeft.setPosition(BOTTOM_TRANSFER);
+                robot.bottomRight.setPosition(BOTTOM_TRANSFER + OFSETRIGHT);
+                robot.bottomLeft.setPosition(BOTTOM_TRANSFER + OFSETLEFT);
                 telemetry.addData("Bottom right", robot.bottomRight.getPosition());
                 telemetry.addData("Bottom left", robot.bottomLeft.getPosition());
                 gotoobserve = true;
@@ -354,7 +371,7 @@ public class Teleop extends LinearOpMode {
             }
             if (gamepad1.y) {
                 SLIDE_HEIGHT = -1200;
-                if (robot.leftSlide.getCurrentPosition() >= -1180) {
+                if (robot.leftSlide.getCurrentPosition() <= -1180) {
                     robot.outtake.setPosition(OUTTAKECLAW1);
                 }
             }
@@ -384,11 +401,12 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("pos", linearSlidePosition);
             telemetry.addData("target", SLIDE_HEIGHT);
             telemetry.addData("power", power);
+            telemetry.addData("bottom left", robot.bottomLeft.getPosition());
+            telemetry.addData("bottom right", robot.bottomRight.getPosition());
             telemetry.update();
         }
 //        robot.topLeft.setPosition(robot.topLeft.getPosition());
 //        robot.topRight.setPosition(robot.topRight.getPosition());
-//        robot.bottomLeft.setPosition(robot.bottomLeft.getPosition());
-//        robot.bottomRight.setPosition(robot.bottomRight.getPosition());
+
     }
 }

@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.TX_PICKUP_ARMSERVO;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.TX_PICKUP_SMARTSERVO;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -104,13 +107,13 @@ public class Sample extends LinearOpMode {
         robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
         robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftSlide.setPower(0.5);
-        robot.rightSlide.setPower(0.5);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
         waitForLinearSlide(linearSlideTargetHeight);
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
-        robot.smartServo.setPosition(Teleop.TX_PICKUP_SMARTSERVO);
-        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO+0.05);
+        robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
+        robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
         robot.intake.setPosition(Teleop.OPENINTAKE);
 
         sleep(1000);
@@ -136,7 +139,7 @@ public class Sample extends LinearOpMode {
         robot.intake.setPosition(Teleop.OPENINTAKE);
         followPath(path4);
         sleep(500);
-        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO);
+        robot.arm.setPosition(TX_PICKUP_ARMSERVO);
         sleep(500);
         robot.outtake.setPosition(Teleop.OUTTAKECLAW1);
         sleep(500);
@@ -175,13 +178,13 @@ public class Sample extends LinearOpMode {
         robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
         robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftSlide.setPower(0.5);
-        robot.rightSlide.setPower(0.5);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
         waitForLinearSlide(linearSlideTargetHeight);
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
-        robot.smartServo.setPosition(Teleop.TX_PICKUP_SMARTSERVO);
-        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO+0.05);
+        robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
+                robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
 
         sleep(1000);
 
@@ -206,7 +209,7 @@ public class Sample extends LinearOpMode {
         robot.intake.setPosition(Teleop.OPENINTAKE);
         followPath(path4);
         sleep(500);
-        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO);
+        robot.arm.setPosition(TX_PICKUP_ARMSERVO);
         sleep(500);
         robot.outtake.setPosition(Teleop.OUTTAKECLAW1);
         sleep(250);
@@ -246,14 +249,14 @@ public class Sample extends LinearOpMode {
         robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
         robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftSlide.setPower(0.5);
-        robot.rightSlide.setPower(0.5);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
         waitForLinearSlide(linearSlideTargetHeight);
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         waitForLinearSlide(linearSlideTargetHeight);
-        robot.smartServo.setPosition(Teleop.TX_PICKUP_SMARTSERVO);
-        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO+0.05);
+        robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
+        robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
 
         sleep(1000);
 
@@ -279,7 +282,7 @@ public class Sample extends LinearOpMode {
         sleep(500);
         followPath(path4);
         sleep(500);
-        robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO);
+        robot.arm.setPosition(TX_PICKUP_ARMSERVO);
         sleep(250);
         robot.outtake.setPosition(Teleop.OUTTAKECLAW1);
 
@@ -314,6 +317,7 @@ public class Sample extends LinearOpMode {
         robot.rightSlide.setPower(0.5);
         waitForLinearSlide(linearSlideTargetHeight);
 
+        waitForStart();
 
         while (opModeIsActive()) {
             telemetry.addData("Holding Point", "true");

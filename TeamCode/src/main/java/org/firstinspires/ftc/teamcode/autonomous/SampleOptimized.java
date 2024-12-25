@@ -93,7 +93,7 @@ public class SampleOptimized extends LinearOpMode {
                     sleep(500);
                     robot.arm.setPosition(Teleop.TX_PICKUP_ARMSERVO);
                     sleep(500);
-                    robot.outtake.setPosition(Teleop.OUTTAKECLAW1);
+                    robot.outtake.setPosition(Teleop.OUTTAKEOPEN);
                     sleep(500);
                     SLIDE_HEIGHT = -2350;
                     robot.leftHorizontalSlide.setPosition(0);

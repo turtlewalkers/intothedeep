@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -34,6 +35,7 @@ public class TurtleRobot {
     public Servo bottomRight = null;
     public Servo smartServo = null;
     public Servo arm = null;
+    public RevBlinkinLedDriver light = null;
     /* local OpMode members. */
     HardwareMap hwMap = null;
     public ElapsedTime period = new ElapsedTime();
@@ -85,6 +87,7 @@ public class TurtleRobot {
         leftHorizontalSlide = hwMap.get(Servo.class, "left_horizontal_slide");
         rightHorizontalSlide = hwMap.get(Servo.class, "right_horizontal_slide");
 
+        light = hwMap.get(RevBlinkinLedDriver.class, "light");
         intake = hwMap.get(Servo.class, "intake_claw");
         outtake = hwMap.get(Servo.class, "outake_claw");
         topLeft = hwMap.get(Servo.class, "top_servo");
@@ -110,6 +113,8 @@ public class TurtleRobot {
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftActuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightActuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

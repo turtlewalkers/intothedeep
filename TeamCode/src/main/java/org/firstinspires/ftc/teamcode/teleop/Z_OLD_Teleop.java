@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKECLOSE;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -14,8 +15,8 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -28,49 +29,46 @@ import java.util.List;
 
 @Config
 @TeleOp
-public class Teleop extends LinearOpMode {
+public class Z_OLD_Teleop extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     public static int SLIDE_HEIGHT = 0;
     TurtleRobot robot = new TurtleRobot(this);
     boolean softlock = true;
-    public static double OUTTAKEOPEN =  0; // open
+    public static double OUTTAKECLAW1 =  0;
     public static double OUTTAKECLOSE = 1; // close
     public static double SMARTSERVO1 = 0.6;
     public static double SMARTSERVO2 = 0.15;
-    public static double TX_PICKUP_SMARTSERVO = 0.46;  //0.4
+    public static double TX_PICKUP_SMARTSERVO = 0;
     public static double HORIZONTALSLIDE = 0;
-    public static double BASKET_SMARTSERVO = 1;
-    public static double BASKET_ARMSERVO = 0.48;
-    public static double TX_PICKUP_ARMSERVO =  0.02; //0.11
-    public static double SPEC_DROP_SMART = 0.8;
+    public static double BASKET_SMARTSERVO = 0.75;
+    public static double BASKET_ARMSERVO = 0.5;
+    public static double TX_PICKUP_ARMSERVO =  0.07;
+    public static double SPEC_DROP_SMART = 0.5;
     public static double SPEC_DROP_ARM = 0;
-    public static double OPENINTAKE = 0.7; //0.7
-    public static double CLOSEINTAKE = 0.01; //0.01
-    public static double TOP_OBSERVE = 0.42; // 0.53
-    public static double BOTTOM_OBSERVE = 0.85; //0.85
-    public static double TOP_TRANSFER = 0.4;  //0.4
-    public static double BOTTOM_TRANSFER = 0.1;  //0.1
-    public static double TOP_PICK = 0.48;  // 0.61
-    public static double BOTTOM_PICK = 0.85; // 0.8
+    public static double OPENINTAKE = 0.25;
+    public static double CLOSEINTAKE = 0.02;
+    public static double TOP_OBSERVE = 0.6;
+    public static double BOTTOM_OBSERVE = 0.85;
+    public static double TOP_TRANSFER = 0.58;
+    public static double BOTTOM_TRANSFER = 0.15;
+    public static double TOP_PICK = 0.83;
+//    public static double BOTTOM_PICK = 0.8;
+    public static double BOTTOM_PICK = 0.75;
     public static double BOTTOMINIT = 0.2;
     public static double PICKING_UP = 0.85;
     public static double PADLEFT = 0.1;
-    public static double TOP_SCAN_SUB = 0.53;
-    public static double BOTTOM_SCAN_SUB = 0.56;
+    public static double TOP_SCAN_SUB = 0.7;
+    public static double BOTTOM_SCAN_SUB = 0.6;
     public static double TOPINIT = TOP_TRANSFER;
     public static double HANG;
-    public static double maxmove = 0.8; //0.6
     boolean servolock = false;
-    public static double SPEC_PICK_SMARTSERVO = 0.4;
-    public static double SPEC_PICK_ARMSERVO = 0.95;
+    public static double SPEC_PICK_SMARTSERVO = 0;
+    public static double SPEC_PICK_ARMSERVO = 1;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
     double BOTTOM_RIGHT = BOTTOMINIT;
     public static double OFSETRIGHT = 0.01;
     public static double OFSETLEFT = -0.02;
-
-
-
     static final double COUNTS_PER_MOTOR_REV = 384.5;
     static final double DRIVE_GEAR_REDUCTION = 1.0;
     static final double PULLEY_DIAMETER_INCHES = 1.404;
@@ -83,13 +81,13 @@ public class Teleop extends LinearOpMode {
     double right_command;
     boolean gotoobserve = true;
     private Limelight3A limelight;
+    boolean canPress = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
         ElapsedTime timer = new ElapsedTime();
-        ElapsedTime tim = new ElapsedTime();
-        ElapsedTime padb = new ElapsedTime();
+
         PIDController controller = new PIDController(PIDF.p, PIDF.i, PIDF.d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.topLeft.setPosition(TOPINIT);
@@ -134,9 +132,9 @@ public class Teleop extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            double divisor = 0.9;
+            double divisor = 1;
             if (gamepad1.left_trigger != 0) {
-                divisor = 2.5;
+                divisor = 3;
             }
 
             robot.leftFront.setPower(Math.cbrt(y + x + rx) / divisor);
@@ -144,8 +142,8 @@ public class Teleop extends LinearOpMode {
             robot.rightFront.setPower(Math.cbrt(y - x - rx) / divisor);
             robot.rightBack.setPower(Math.cbrt(y + x - rx) / divisor);
 
-            HORIZONTALSLIDE -= gamepad2.left_stick_y / 40;
-            HORIZONTALSLIDE = min(HORIZONTALSLIDE, maxmove);
+            HORIZONTALSLIDE -= gamepad2.left_stick_y / 50;
+            HORIZONTALSLIDE = min(HORIZONTALSLIDE, 0.9);
             HORIZONTALSLIDE = max(HORIZONTALSLIDE, 0);
 
             robot.leftHorizontalSlide.setPosition(HORIZONTALSLIDE);
@@ -156,34 +154,33 @@ public class Teleop extends LinearOpMode {
             robot.rightActuator.setPower(actuatorPos);
             robot.leftActuator.setPower(actuatorPos);
 
-            if (gamepad2.b) { // Picks
-                robot.topLeft.setPosition(TOP_PICK);
-                robot.bottomRight.setPosition(robot.bottomRight.getPosition());
-                robot.bottomLeft.setPosition(robot.bottomLeft.getPosition());
-
-                timer.reset();
-
+            if (gamepad2.right_stick_y != 0) {
+              robot.leftSlide.setPower(gamepad2.right_stick_y);
+              robot.rightSlide.setPower(gamepad2.right_stick_y);
             }
-//
-
-            if (timer.milliseconds() >= 50 && timer.milliseconds() <= 100) {
+            if (gamepad2.b && canPress) { // Picks
+                robot.topLeft.setPosition(TOP_PICK);
+                sleep(200);
                 robot.intake.setPosition(CLOSEINTAKE);
             }
-            telemetry.addData("intakeclawposition", robot.intake.getPosition());
-            if (gamepad2.y) { // Observes
+
+            if (gamepad2.y && canPress) { // Observes
                 Log.d("OBSERVE", String.valueOf(robot.topLeft.getPosition()));
                 robot.topLeft.setPosition(TOP_OBSERVE);
                 robot.intake.setPosition(OPENINTAKE);
+
+                timer.reset();
 //                robot.bottomRight.setPosition(BOTTOM_OBSERVE);
 //                robot.bottomLeft.setPosition(BOTTOM_OBSERVE);
-                if(gotoobserve) {
-                    robot.bottomRight.setPosition(BOTTOM_OBSERVE);
-                    robot.bottomLeft.setPosition(BOTTOM_OBSERVE);
+                if(gotoobserve && canPress) {
+//                    robot.bottomRight.setPosition(BOTTOM_OBSERVE);
+//                    robot.bottomLeft.setPosition(BOTTOM_OBSERVE);
+                    setPositionForBottom(BOTTOM_OBSERVE, BOTTOM_OBSERVE);
                     BOTTOM_LEFT = BOTTOM_OBSERVE;
                     BOTTOM_RIGHT = BOTTOM_OBSERVE;
                     gotoobserve = false;
                 }
-                double multiplier = 0.015;
+                double multiplier = 0.01;
 
                 if (!gamepad2.dpad_left) {
                     if (gamepad2.right_stick_x != 0) {
@@ -191,14 +188,14 @@ public class Teleop extends LinearOpMode {
                         BOTTOM_RIGHT -= gamepad2.right_stick_x * multiplier;
                     }
 
-                    BOTTOM_LEFT = min(BOTTOM_LEFT, BOTTOM_OBSERVE + 0.24);
-                    BOTTOM_LEFT = max(BOTTOM_LEFT, BOTTOM_OBSERVE - 0.24);
-                    BOTTOM_RIGHT = max(BOTTOM_RIGHT, BOTTOM_OBSERVE - 0.24);
-                    BOTTOM_RIGHT = min(BOTTOM_RIGHT, BOTTOM_OBSERVE + 0.24);
+                    BOTTOM_LEFT = min(BOTTOM_LEFT, BOTTOM_OBSERVE + 0.12);
+                    BOTTOM_LEFT = max(BOTTOM_LEFT, BOTTOM_OBSERVE - 0.12);
+                    BOTTOM_RIGHT = max(BOTTOM_RIGHT, BOTTOM_OBSERVE - 0.12);
+                    BOTTOM_RIGHT = min(BOTTOM_RIGHT, BOTTOM_OBSERVE + 0.12);
 
-                    robot.bottomRight.setPosition(BOTTOM_RIGHT);
-                    robot.bottomLeft.setPosition(BOTTOM_LEFT);
-
+//                    robot.bottomRight.setPosition(BOTTOM_RIGHT);
+//                    robot.bottomLeft.setPosition(BOTTOM_LEFT);
+                    setPositionForBottom(BOTTOM_LEFT, BOTTOM_RIGHT);
                     telemetry.addData("Bottom right", BOTTOM_LEFT);
                     telemetry.addData("Bottom left", BOTTOM_RIGHT);
                 }
@@ -292,8 +289,9 @@ public class Teleop extends LinearOpMode {
                                     double angleInDegrees = Math.toDegrees(theta);
                                     telemetry.addData("Angle of the sample", angleInDegrees);
 
-                                    robot.bottomRight.setPosition(BOTTOM_OBSERVE + theta / 90 * 5);
-                                    robot.bottomLeft.setPosition(BOTTOM_OBSERVE - theta / 90 * 5);
+                                    setPositionForBottom(BOTTOM_OBSERVE - theta / 90 * 5, BOTTOM_OBSERVE + theta / 90 * 5);
+//                                    robot.bottomRight.setPosition(BOTTOM_OBSERVE + theta / 90 * 5);
+//                                    robot.bottomLeft.setPosition(BOTTOM_OBSERVE - theta / 90 * 5);
                                     robot.light.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                                 }
                                 telemetry.update();
@@ -303,21 +301,22 @@ public class Teleop extends LinearOpMode {
                     }
                 }
             }
-            if (gamepad2.x) {
+            if (gamepad2.x && canPress) {
                 //robot.topRight.setPosition(TOP_TRANSFER);
                 robot.topLeft.setPosition(TOP_TRANSFER);
-                robot.bottomRight.setPosition(BOTTOM_TRANSFER + OFSETRIGHT);
-                robot.bottomLeft.setPosition(BOTTOM_TRANSFER + OFSETLEFT);
+//                robot.bottomRight.setPosition(BOTTOM_TRANSFER + OFSETRIGHT);
+//                robot.bottomLeft.setPosition(BOTTOM_TRANSFER + OFSETLEFT);
+                setPositionForBottom(BOTTOM_TRANSFER + OFSETLEFT, BOTTOM_TRANSFER + OFSETRIGHT);
                 telemetry.addData("Bottom right", robot.bottomRight.getPosition());
                 telemetry.addData("Bottom left", robot.bottomLeft.getPosition());
                 gotoobserve = true;
-            } else if (gamepad2.a) { //scans the submersible
+                timer.reset();
+            } else if (gamepad2.a && canPress) { //scans the submersible
                 //robot.topRight.setPosition(TOP_SCAN_SUB);
-                robot.topLeft.setPosition(TOP_SCAN_SUB);
-                robot.bottomRight.setPosition(BOTTOM_SCAN_SUB);
-                robot.bottomLeft.setPosition(BOTTOM_SCAN_SUB);
-                robot.intake.setPosition(CLOSEINTAKE);
+                setPositionForBottom(BOTTOM_SCAN_SUB, BOTTOM_SCAN_SUB);
                 gotoobserve = true;
+                robot.topLeft.setPosition(TOP_SCAN_SUB);
+                timer.reset();
             }
 
             if (gamepad2.left_bumper) {
@@ -337,21 +336,19 @@ public class Teleop extends LinearOpMode {
             if (gamepad1.right_bumper) {
                 robot.outtake.setPosition(OUTTAKECLOSE);
             } else if (gamepad1.left_bumper) {
-                robot.outtake.setPosition(OUTTAKEOPEN);
+                robot.outtake.setPosition(OUTTAKECLAW1);
             }
 
             if (gamepad1.dpad_right) { // outtake action - pick specimen from wall
                 robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
                 robot.arm.setPosition(SPEC_PICK_ARMSERVO);
-                robot.outtake.setPosition(OUTTAKEOPEN);
+                robot.outtake.setPosition(OUTTAKECLAW1);
                 SLIDE_HEIGHT = 0;
             }
 
             if (gamepad1.dpad_down) { // outtake action - pick up from transfer box
-                robot.smartServo.setPosition(BASKET_SMARTSERVO);
-                robot.arm.setPosition(BASKET_ARMSERVO);
-                SLIDE_HEIGHT = -750;
-                robot.outtake.setPosition(OUTTAKEOPEN);
+                robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
+                robot.arm.setPosition(TX_PICKUP_ARMSERVO);
             }
 
             if (gamepad1.dpad_up) { // outtake action - drop position for basket
@@ -360,46 +357,35 @@ public class Teleop extends LinearOpMode {
             }
 
             if (gamepad1.dpad_left) { // outtake action - pick specimen drop
-                robot.outtake.setPosition(OUTTAKECLOSE);
-                robot.smartServo.setPosition(0);
-                robot.arm.setPosition(SPEC_DROP_ARM);
-                SLIDE_HEIGHT = -640;
-                tim.reset();
-
-            }
-            if (tim.milliseconds() >= 200 && tim.milliseconds() <= 300) {
                 robot.smartServo.setPosition(SPEC_DROP_SMART);
+                robot.arm.setPosition(SPEC_DROP_ARM);
+                robot.outtake.setPosition(OUTTAKECLOSE);
+                SLIDE_HEIGHT = -700;
             }
+
             if (gamepad1.a) {
                 robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
                 robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
-                robot.outtake.setPosition(OUTTAKEOPEN);
                 SLIDE_HEIGHT = 0;
             }
             if (gamepad1.y) {
-                SLIDE_HEIGHT = -1350;
-                if (robot.leftSlide.getCurrentPosition() <= -1250) {
-                    robot.outtake.setPosition(OUTTAKEOPEN);
+                SLIDE_HEIGHT = -1200;
+                if (robot.leftSlide.getCurrentPosition() <= -1180) {
+                    robot.outtake.setPosition(OUTTAKECLAW1);
                 }
             }
             if (gamepad1.b) {
-                robot.outtake.setPosition(OUTTAKECLOSE);
-                padb.reset();
+                SLIDE_HEIGHT = -2200;
+                robot.smartServo.setPosition(BASKET_SMARTSERVO);
+                robot.arm.setPosition(BASKET_ARMSERVO);
                 // continuous: -2600
                 // cascading: -850
             }
-
-            if (padb.milliseconds() >= 50 && padb.milliseconds() <= 100) {
-                SLIDE_HEIGHT = -2100;
-                robot.smartServo.setPosition(BASKET_SMARTSERVO);
-                robot.arm.setPosition(BASKET_ARMSERVO);
-            }
-
             if (gamepad1.x) {
-                robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
-                robot.arm.setPosition(TX_PICKUP_ARMSERVO);
-                robot.outtake.setPosition(OUTTAKEOPEN);
+                robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
+                robot.arm.setPosition(SPEC_PICK_ARMSERVO);
                 SLIDE_HEIGHT = 0;
+                robot.outtake.setPosition(OUTTAKECLAW1);
             }
 
             controller.setPID(PIDF.p, PIDF.i, PIDF.d);
@@ -421,5 +407,21 @@ public class Teleop extends LinearOpMode {
 //        robot.topLeft.setPosition(robot.topLeft.getPosition());
 //        robot.topRight.setPosition(robot.topRight.getPosition());
 
+
+    }
+    public void setPositionForBottom(double left, double right) {
+        if (left > 1 || left < 0 || right > 1 || right < 0) {
+            return;
+        }
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+        robot.bottomLeft.setPosition(left);
+        robot.bottomRight.setPosition(right);
+        double diff = 1;
+        while(timer.milliseconds() < 200 && diff > 0.04 ){
+            diff = Math.abs(robot.bottomLeft.getPosition() - left);
+            canPress = false;
+        }
+        canPress = true;
     }
 }

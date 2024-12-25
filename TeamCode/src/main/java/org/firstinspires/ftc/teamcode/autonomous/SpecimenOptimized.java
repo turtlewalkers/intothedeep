@@ -1,16 +1,20 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.teleop.PIDF.d;
-import static org.firstinspires.ftc.teamcode.teleop.PIDF.f;
 import static org.firstinspires.ftc.teamcode.teleop.PIDF.i;
 import static org.firstinspires.ftc.teamcode.teleop.PIDF.p;
-import static org.firstinspires.ftc.teamcode.teleop.PIDF.ticks_in_degrees;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOMINIT;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKECLAW2;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOM_TRANSFER;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.OFSETLEFT;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.OFSETRIGHT;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKEOPEN;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKECLOSE;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_ARM;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_SMART;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_PICK_ARMSERVO;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_PICK_SMARTSERVO;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.TOPINIT;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.TOP_SCAN_SUB;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -22,13 +26,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathBuilder;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Drawing;
 import org.firstinspires.ftc.teamcode.robot.TurtleRobot;
-import org.firstinspires.ftc.teamcode.teleop.Teleop;
 
 @Config
 @Autonomous
@@ -38,8 +41,9 @@ public class SpecimenOptimized extends LinearOpMode {
     private ElapsedTime timeElapsed;
 
     private Follower follower;
-    private PathChain paths;
-    private Path path1, path2, path3, path4, path5, path6, path7;
+    private PathChain paths, path10, path8;
+    private Path path1, path2, path3, path4, path5, path6, path7, path11;
+    private Path path9;
     private PIDController controller;
 
     @Override
@@ -49,85 +53,158 @@ public class SpecimenOptimized extends LinearOpMode {
         robot.topLeft.setPosition(TOPINIT);
         robot.bottomRight.setPosition(BOTTOMINIT);
         robot.bottomLeft.setPosition(BOTTOMINIT);
-        robot.smartServo.setPosition(0.3);
-        robot.arm.setPosition(SPEC_PICK_ARMSERVO);
+//        robot.smartServo.setPosition(SPEC_DROP_SMART);
+//        robot.arm.setPosition(SPEC_DROP_ARM);
+        robot.outtake.setPosition(OUTTAKECLOSE);
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(new Pose(7, 57, 0));
         timeElapsed = new ElapsedTime();
 
+        path1 = new Path(new BezierCurve(new Point(7, 57, Point.CARTESIAN), new Point(32, 68, Point.CARTESIAN)));
+        path1.setConstantHeadingInterpolation(0);
+
+        path2 = new Path(new BezierCurve(new Point(32, 68, Point.CARTESIAN), new Point(5, 25, Point.CARTESIAN), new Point(55, 37, Point.CARTESIAN)));
+        path2.setConstantHeadingInterpolation(0);
+
         paths = follower.pathBuilder()
-                .addTemporalCallback(0.000002, () -> {
-                    SLIDE_HEIGHT = 0;
-                })
-                .addTemporalCallback(0.5, () -> {
-                    SLIDE_HEIGHT = -700;
-                    robot.smartServo.setPosition(SPEC_DROP_SMART);
-                    robot.arm.setPosition(SPEC_DROP_ARM);
-                    robot.outtake.setPosition(OUTTAKECLAW2);
-                })
-                .addPath(new BezierCurve(new Point(7, 57, Point.CARTESIAN), new Point(27, 68, Point.CARTESIAN))) // path1
+                .addPath(new BezierCurve(new Point(63, 22, Point.CARTESIAN), new Point(25, 22, Point.CARTESIAN))) // path3
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(27, 68, Point.CARTESIAN), new Point(5, 25, Point.CARTESIAN), new Point(55, 37, Point.CARTESIAN))) // path2
-                .setConstantHeadingInterpolation(0)
-
-                .addPath(new BezierCurve(new Point(63, 25, Point.CARTESIAN), new Point(20, 25, Point.CARTESIAN))) // path3
-                .setConstantHeadingInterpolation(0)
-
-                .addPath(new BezierCurve(new Point(20, 25, Point.CARTESIAN), new Point(70, 43, Point.CARTESIAN), new Point(60, 17, Point.CARTESIAN))) // path4
+                .addPath(new BezierCurve(new Point(20, 22, Point.CARTESIAN), new Point(70, 43, Point.CARTESIAN), new Point(60, 17, Point.CARTESIAN))) // path4
                 .setConstantHeadingInterpolation(0)
 
                 .addPath(new BezierCurve(new Point(60, 17, Point.CARTESIAN), new Point(20, 17, Point.CARTESIAN))) // path5
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(20, 15, Point.CARTESIAN), new Point(70, 35, Point.CARTESIAN), new Point(60, 7, Point.CARTESIAN))) // path6
-                .setConstantHeadingInterpolation(0)
-
-                .addPath(new BezierCurve(new Point(60, 7, Point.CARTESIAN), new Point(20, 7, Point.CARTESIAN))) // path7
-                .setConstantHeadingInterpolation(0)
+//                .addPath(new BezierCurve(new Point(20, 15, Point.CARTESIAN), new Point(70, 35, Point.CARTESIAN), new Point(60, 10, Point.CARTESIAN))) // path6
+//                .setConstantHeadingInterpolation(0)
+//
+//                .addPath(new BezierCurve(new Point(60, 10, Point.CARTESIAN), new Point(20, 7, Point.CARTESIAN))) // path7
+//                .setConstantHeadingInterpolation(0)
 
                 .build();
 
-        path1 = new Path(new BezierCurve(new Point(7,57,Point.CARTESIAN), new Point(33, 68, Point.CARTESIAN)));
-        path1.setConstantHeadingInterpolation(0);
-        path2 = new Path(new BezierCurve(new Point(47,68,Point.CARTESIAN), new Point(29,46,Point.CARTESIAN), new Point(63,25,Point.CARTESIAN)));
-        path2.setConstantHeadingInterpolation(Math.PI / 2);
-        path3 = new Path(new BezierCurve(new Point(63,25,Point.CARTESIAN), new Point(10, 25, Point.CARTESIAN)));
-        path3.setConstantHeadingInterpolation(Math.PI / 2);
+        path3 = new Path(new BezierCurve(new Point(63, 22, Point.CARTESIAN), new Point(20, 22, Point.CARTESIAN)));
+        path3.setConstantHeadingInterpolation(0);
 
-        path4 = new Path(new BezierCurve(new Point(10,25,Point.CARTESIAN), new Point(91, 57, Point.CARTESIAN), new Point(60, 14, Point.CARTESIAN)));
-        path4.setConstantHeadingInterpolation(Math.PI / 2);
-        path5 = new Path(new BezierCurve(new Point(60,14,Point.CARTESIAN), new Point(10, 14, Point.CARTESIAN)));
-        path5.setConstantHeadingInterpolation(Math.PI / 2);
-        path6 = new Path(new BezierCurve(new Point(10,6,Point.CARTESIAN), new Point(91, 49, Point.CARTESIAN), new Point(60, 14, Point.CARTESIAN)));
-        path6.setConstantHeadingInterpolation(Math.PI / 2);
+        path4 = new Path(new BezierCurve(new Point(20, 22, Point.CARTESIAN), new Point(70, 43, Point.CARTESIAN), new Point(60, 17, Point.CARTESIAN)));
+        path4.setConstantHeadingInterpolation(0);
 
-        path7 = new Path(new BezierCurve(new Point(60,6,Point.CARTESIAN), new Point(10, 6, Point.CARTESIAN)));
-        path7.setConstantHeadingInterpolation(Math.PI / 2);
+        path5 = new Path(new BezierCurve(new Point(60, 17, Point.CARTESIAN), new Point(20, 17, Point.CARTESIAN)));
+        path5.setConstantHeadingInterpolation(0);
 
+        path6 = new Path(new BezierCurve(new Point(20, 15, Point.CARTESIAN), new Point(70, 35, Point.CARTESIAN), new Point(60, 10, Point.CARTESIAN)));
+        path6.setConstantHeadingInterpolation(0);
+
+        path7 = new Path(new BezierCurve(new Point(60, 9, Point.CARTESIAN), new Point(20, 9, Point.CARTESIAN)));
+        path7.setConstantHeadingInterpolation(0);
+
+//        path8 = new Path(new BezierCurve(new Point(20, 9, Point.CARTESIAN), new Point(60, 15, Point.CARTESIAN), new Point(12, 34, Point.CARTESIAN)));
+//        path8.setConstantHeadingInterpolation(0);
+
+        path8 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(20, 9, Point.CARTESIAN), new Point(60, 15, Point.CARTESIAN), new Point(10, 34, Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+
+        path9 = new Path(new BezierCurve(new Point(7, 37, Point.CARTESIAN), new Point(35, 68, Point.CARTESIAN)));
+        path9.setConstantHeadingInterpolation(0);
+
+//        path10 = new Path(new BezierCurve(new Point(35, 68, Point.CARTESIAN), new Point(12, 35, Point.CARTESIAN)));
+//        path10.setConstantHeadingInterpolation(0);
+
+        path10 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(35, 68, Point.CARTESIAN), new Point(10, 35, Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(0)
+                .build();
 
         waitForStart();
 
-        follower.followPath(paths);
+        SLIDE_HEIGHT = -700;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        waitForLinearSlide(SLIDE_HEIGHT);
+        robot.smartServo.setPosition(SPEC_DROP_SMART);
+        robot.arm.setPosition(SPEC_DROP_ARM);
+        robot.outtake.setPosition(OUTTAKECLOSE);
+        robot.topLeft.setPosition(TOP_SCAN_SUB);
+        robot.bottomRight.setPosition(BOTTOM_TRANSFER + OFSETRIGHT);
+        robot.bottomLeft.setPosition(BOTTOM_TRANSFER + OFSETLEFT);
+        followPath(path1);
+        SLIDE_HEIGHT = -1350;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        waitForLinearSlide(SLIDE_HEIGHT);
+        sleep(750);
+        robot.outtake.setPosition(OUTTAKEOPEN);
+        sleep(100);
+        robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
+        robot.arm.setPosition(SPEC_PICK_ARMSERVO);
+        robot.outtake.setPosition(OUTTAKEOPEN);
+        SLIDE_HEIGHT = 0;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        waitForLinearSlide(SLIDE_HEIGHT);
+        followPath(path2);
 
+        followPath(paths);
 
-        while (opModeIsActive()) {
-            follower.update();
-            controller.setPID(p, i, d);
-            int linearSlidePosition = robot.leftSlide.getCurrentPosition();
-            double pid = controller.calculate(linearSlidePosition, SLIDE_HEIGHT);
-            double ff = Math.toRadians(SLIDE_HEIGHT / ticks_in_degrees) * f;
-            double power = pid + ff;
-            robot.leftSlide.setPower(power);
-            robot.rightSlide.setPower(power);
-
-            telemetry.addData("pos", linearSlidePosition);
-            telemetry.addData("target", SLIDE_HEIGHT);
-            telemetry.update();
+        followPath(path8);
+        for (int i = 0; i < 3; ++i) {
+            robot.outtake.setPosition(OUTTAKECLOSE);
+            sleep(200);
+            SLIDE_HEIGHT = -700;
+            robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+            robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+            robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftSlide.setPower(1);
+            robot.rightSlide.setPower(1);
+            waitForLinearSlide(SLIDE_HEIGHT);
+            robot.smartServo.setPosition(SPEC_DROP_SMART);
+            robot.arm.setPosition(SPEC_DROP_ARM);
+            followPath(path9);
+            SLIDE_HEIGHT = -1350;
+            robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+            robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+            robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftSlide.setPower(1);
+            robot.rightSlide.setPower(1);
+            waitForLinearSlide(SLIDE_HEIGHT);
+            sleep(750);
+            robot.outtake.setPosition(OUTTAKEOPEN);
+            robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
+            robot.arm.setPosition(SPEC_PICK_ARMSERVO);
+            SLIDE_HEIGHT = 0;
+            robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+            robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+            robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftSlide.setPower(1);
+            robot.rightSlide.setPower(1);
+            waitForLinearSlide(SLIDE_HEIGHT);
+            followPath(path10);
         }
-
+    }
+    public void followPath(PathChain path) {
+        follower.followPath(path, true);
+        while (follower.isBusy())
+            UpdatePathAndTelemetry();
     }
     public void followPath(Path path) {
         follower.followPath(path);
@@ -161,5 +238,16 @@ public class SpecimenOptimized extends LinearOpMode {
                 robot.rightSlide.setPower(0);
             }
         }).start();
+    }
+    public void pause(double time, double x, double y, double degrees) {
+        ElapsedTime myTimer = new ElapsedTime();
+        myTimer.reset();
+        while (myTimer.seconds() < time) {
+            telemetry.addData("Elapsed Time", myTimer.seconds());
+            telemetry.update();
+
+            follower.holdPoint(new BezierPoint(new Point(x, y, Point.CARTESIAN)), Math.toRadians(degrees));
+            // sleep(50);
+        }
     }
 }

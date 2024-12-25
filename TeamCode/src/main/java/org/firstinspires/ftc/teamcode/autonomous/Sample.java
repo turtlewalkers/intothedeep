@@ -13,8 +13,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathBuilder;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Drawing;
 import org.firstinspires.ftc.teamcode.robot.TurtleRobot;
@@ -50,21 +48,21 @@ public class Sample extends LinearOpMode {
         timeElapsed = new ElapsedTime();
 
         // go to basket
-        path1 = new Path(new BezierCurve(new Point(10,104,Point.CARTESIAN), new Point(15,120,Point.CARTESIAN)));
+        path1 = new Path(new BezierCurve(new Point(10,104,Point.CARTESIAN), new Point(17,120,Point.CARTESIAN)));
         path1.setConstantHeadingInterpolation(-Math.PI / 4);
         // go to position for dropping sample
         path2 = new Path(new BezierCurve(new Point(15,120,Point.CARTESIAN), new Point(16,125,Point.CARTESIAN)));
         path2.setConstantHeadingInterpolation(-Math.PI / 4);
         // first one
-        path3 = new Path(new BezierCurve(new Point(17,126,Point.CARTESIAN), new Point(21.5, 123.5, Point.CARTESIAN)));
+        path3 = new Path(new BezierCurve(new Point(15,126,Point.CARTESIAN), new Point(25, 123, Point.CARTESIAN)));
         path3.setConstantHeadingInterpolation(0);
         path4 = new Path(new BezierCurve(new Point(23,125, Point.CARTESIAN), new Point(18,124, Point.CARTESIAN)));
         path4.setConstantHeadingInterpolation(-Math.PI / 4);
         // second one
-        path5 = new Path(new BezierCurve(new Point(17, 126, Point.CARTESIAN), new Point(21.5  , 128, Point.CARTESIAN)));
+        path5 = new Path(new BezierCurve(new Point(17, 126, Point.CARTESIAN), new Point(25, 130, Point.CARTESIAN)));
         path5.setConstantHeadingInterpolation(0);
         // third one
-        path6 = new Path(new BezierCurve(new Point(20, 129, Point.CARTESIAN), new Point(21, 130, Point.CARTESIAN)));
+        path6 = new Path(new BezierCurve(new Point(20, 129, Point.CARTESIAN), new Point(25, 133, Point.CARTESIAN)));
         path6.setConstantHeadingInterpolation(Math.PI / 8);
 
         waitForStart();
@@ -95,6 +93,9 @@ public class Sample extends LinearOpMode {
         //robot.topRight.setPosition(Teleop.TOP_OBSERVE);
         robot.topLeft.setPosition(Teleop.TOP_OBSERVE);
         robot.intake.setPosition(Teleop.OPENINTAKE);
+        telemetry.addData("right", robot.bottomRight.getPosition());
+        telemetry.addData("left", robot.bottomLeft.getPosition());
+        telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_OBSERVE);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_OBSERVE);
 
@@ -115,33 +116,40 @@ public class Sample extends LinearOpMode {
         robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
         robot.intake.setPosition(Teleop.OPENINTAKE);
-
-        sleep(1000);
+        sleep(500);
 
         robot.leftHorizontalSlide.setPosition(0.5);
         robot.rightHorizontalSlide.setPosition(0.5);
         sleep(500);
         //robot.topRight.setPosition(Teleop.TOP_PICK);
         robot.topLeft.setPosition(Teleop.TOP_PICK);
+        telemetry.addData("right", robot.bottomRight.getPosition());
+        telemetry.addData("left", robot.bottomLeft.getPosition());
+        telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_PICK);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_PICK);
         sleep(250);
         robot.intake.setPosition(Teleop.CLOSEINTAKE);
 
+
         sleep(500);
+
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         //robot.topRight.setPosition(Teleop.TOP_TRANSFER);
-        robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
+        telemetry.addData("right", robot.bottomRight.getPosition());
+        telemetry.addData("left", robot.bottomLeft.getPosition());
+        telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_TRANSFER);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_TRANSFER);
         sleep(500);
-        robot.intake.setPosition(Teleop.OPENINTAKE);
+        robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
         followPath(path4);
-        sleep(500);
+        sleep(200);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO);
-        sleep(500);
-        robot.outtake.setPosition(Teleop.OUTTAKECLAW1);
+        robot.intake.setPosition(Teleop.OPENINTAKE);
+        sleep(200);
+        robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
         sleep(500);
         linearSlideTargetHeight = -2350;
         SLIDE_HEIGHT = -2350;
@@ -163,10 +171,14 @@ public class Sample extends LinearOpMode {
 
         // the third one
         //robot.topRight.setPosition(Teleop.TOP_OBSERVE);
-        robot.topLeft.setPosition(Teleop.TOP_OBSERVE);
-        robot.intake.setPosition(Teleop.OPENINTAKE);
+        telemetry.addData("right", robot.bottomRight.getPosition());
+        telemetry.addData("left", robot.bottomLeft.getPosition());
+        telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_OBSERVE);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_OBSERVE);
+        sleep(50);
+        robot.topLeft.setPosition(Teleop.TOP_OBSERVE);
+        robot.intake.setPosition(Teleop.OPENINTAKE);
 
         sleep(500);
         followPath(path5);
@@ -184,17 +196,20 @@ public class Sample extends LinearOpMode {
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
-                robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
+        robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
 
         sleep(1000);
-
+//
         robot.leftHorizontalSlide.setPosition(0.5);
         robot.rightHorizontalSlide.setPosition(0.5);
         sleep(500);
         //robot.topRight.setPosition(Teleop.TOP_PICK);
-        robot.topLeft.setPosition(Teleop.TOP_PICK);
+        telemetry.addData("right", robot.bottomRight.getPosition());
+        telemetry.addData("left", robot.bottomLeft.getPosition());
+        telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_PICK);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_PICK);
+        robot.topLeft.setPosition(Teleop.TOP_PICK);
         sleep(500);
         robot.intake.setPosition(Teleop.CLOSEINTAKE);
 
@@ -202,16 +217,19 @@ public class Sample extends LinearOpMode {
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         //robot.topRight.setPosition(Teleop.TOP_TRANSFER);
-        robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
+        telemetry.addData("right", robot.bottomRight.getPosition());
+        telemetry.addData("left", robot.bottomLeft.getPosition());
+        telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_TRANSFER);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_TRANSFER);
-        sleep(750);
-        robot.intake.setPosition(Teleop.OPENINTAKE);
+        sleep(500);
+        robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
         followPath(path4);
         sleep(500);
+        robot.intake.setPosition(Teleop.OPENINTAKE);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO);
         sleep(500);
-        robot.outtake.setPosition(Teleop.OUTTAKECLAW1);
+        robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
         sleep(250);
 
         linearSlideTargetHeight = -2350;
@@ -234,10 +252,14 @@ public class Sample extends LinearOpMode {
 
         // the fourth one
         //robot.topRight.setPosition(Teleop.TOP_OBSERVE);
-        robot.topLeft.setPosition(Teleop.TOP_OBSERVE);
-        robot.intake.setPosition(Teleop.OPENINTAKE);
+        telemetry.addData("right", robot.bottomRight.getPosition());
+        telemetry.addData("left", robot.bottomLeft.getPosition());
+        telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_OBSERVE);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_OBSERVE);
+        sleep(50);
+        robot.topLeft.setPosition(Teleop.TOP_OBSERVE);
+        robot.intake.setPosition(Teleop.OPENINTAKE);
 
         sleep(500);
         followPath(path6);
@@ -264,9 +286,12 @@ public class Sample extends LinearOpMode {
         robot.rightHorizontalSlide.setPosition(0.5);
         sleep(500);
         //robot.topRight.setPosition(Teleop.TOP_PICK);
-        robot.topLeft.setPosition(Teleop.TOP_PICK);
+        telemetry.addData("right", robot.bottomRight.getPosition());
+        telemetry.addData("left", robot.bottomLeft.getPosition());
+        telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_PICK);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_PICK);
+        robot.topLeft.setPosition(Teleop.TOP_PICK);
         sleep(200);
         robot.intake.setPosition(Teleop.CLOSEINTAKE);
 
@@ -274,17 +299,18 @@ public class Sample extends LinearOpMode {
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         //robot.topRight.setPosition(Teleop.TOP_TRANSFER);
-        robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
+        telemetry.addData("right", robot.bottomRight.getPosition());
+        telemetry.addData("left", robot.bottomLeft.getPosition());
+        telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_TRANSFER);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_TRANSFER);
-        sleep(750);
-        robot.intake.setPosition(Teleop.OPENINTAKE);
-        sleep(500);
+        robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
         followPath(path4);
         sleep(500);
+        robot.intake.setPosition(Teleop.OPENINTAKE);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO);
         sleep(250);
-        robot.outtake.setPosition(Teleop.OUTTAKECLAW1);
+        robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
 
         followPath(path4);
         linearSlideTargetHeight = -2350;

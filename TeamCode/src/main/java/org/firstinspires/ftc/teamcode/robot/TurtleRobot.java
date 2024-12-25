@@ -113,6 +113,8 @@ public class TurtleRobot {
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftActuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightActuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

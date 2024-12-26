@@ -62,29 +62,43 @@ public class Specimen extends LinearOpMode {
         follower.setStartingPose(new Pose(7, 57, 0));
         timeElapsed = new ElapsedTime();
 
-        path1 = new Path(new BezierCurve(new Point(7, 57, Point.CARTESIAN), new Point(36, 68, Point.CARTESIAN)));
+        path1 = new Path(new BezierCurve(new Point(7, 57, Point.CARTESIAN), new Point(35, 68, Point.CARTESIAN)));
         path1.setConstantHeadingInterpolation(0);
 
 //        path2 = new Path(new BezierCurve(new Point(32, 68, Point.CARTESIAN), new Point(5, 25, Point.CARTESIAN), new Point(55, 36, Point.CARTESIAN)));
 //        path2.setConstantHeadingInterpolation(0);
 
         paths = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(32, 68, Point.CARTESIAN), new Point(5, 25, Point.CARTESIAN), new Point(45, 36, Point.CARTESIAN)))
+                .addPath(new BezierCurve(new Point(32, 68, Point.CARTESIAN),
+                        new Point(14, 25, Point.CARTESIAN),
+                        new Point(45, 36, Point.CARTESIAN)))
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(63, 25, Point.CARTESIAN), new Point(25, 25, Point.CARTESIAN))) // path3
+                .addPath(new BezierCurve(new Point(63, 25, Point.CARTESIAN),
+                        new Point(26, 25, Point.CARTESIAN))) // path3
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(20, 25, Point.CARTESIAN), new Point(70, 38, Point.CARTESIAN), new Point(45, 16, Point.CARTESIAN))) // path4
+                .addPath(new BezierCurve(new Point(26, 25, Point.CARTESIAN),
+                        new Point(70, 25, Point.CARTESIAN),
+                        new Point(50, 17, Point.CARTESIAN))) // path4
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(60, 17, Point.CARTESIAN), new Point(20, 17, Point.CARTESIAN))) // path5
+                .addPath(new BezierCurve(new Point(50, 17, Point.CARTESIAN),
+                        new Point(26, 17, Point.CARTESIAN))) // path5
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(20, 15, Point.CARTESIAN), new Point(70, 35, Point.CARTESIAN), new Point(45, 8, Point.CARTESIAN))) // path6
+                .addPath(new BezierCurve(new Point(26, 15, Point.CARTESIAN),
+                        new Point(70, 14, Point.CARTESIAN),
+                        new Point(50, 8, Point.CARTESIAN))) // path6
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(60, 9, Point.CARTESIAN), new Point(20, 9, Point.CARTESIAN))) // path7
+                .addPath(new BezierCurve(new Point(60, 10, Point.CARTESIAN),
+                        new Point(26, 10, Point.CARTESIAN))) // path7
+                .setConstantHeadingInterpolation(0)
+
+                .addPath(new BezierCurve(new Point(20, 10, Point.CARTESIAN),
+                        new Point(30, 42, Point.CARTESIAN),
+                        new Point(8, 36, Point.CARTESIAN)))
                 .setConstantHeadingInterpolation(0)
 
                 .build();
@@ -119,7 +133,10 @@ public class Specimen extends LinearOpMode {
 //        path10.setConstantHeadingInterpolation(0);
 
         path10 = follower.pathBuilder()
-                        .addPath(new BezierCurve(new Point(35, 68, Point.CARTESIAN), new Point(8, 35, Point.CARTESIAN)))
+                        .addPath(new BezierCurve(new Point(35, 68, Point.CARTESIAN),
+                                new Point(19, 30, Point.CARTESIAN),
+                                new Point(23, 36, Point.CARTESIAN),
+                                new Point(9, 36, Point.CARTESIAN)))
                         .setConstantHeadingInterpolation(0)
                                 .build();
 
@@ -166,11 +183,11 @@ public class Specimen extends LinearOpMode {
 
         followPath(paths);
 
-        followPath(path8);
-        follower.setMaxPower(0.9);
+//        followPath(path8);
+//        follower.setMaxPower(0.9);
         for (int i = 0; i < 4; ++i) {
             robot.outtake.setPosition(OUTTAKECLOSE);
-            sleep(100);
+//            sleep(100);
             SLIDE_HEIGHT = -700;
             robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
             robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
@@ -182,7 +199,7 @@ public class Specimen extends LinearOpMode {
             robot.smartServo.setPosition(SPEC_DROP_SMART);
             robot.arm.setPosition(SPEC_DROP_ARM);
             followPath(path9);
-            follower.setMaxPower(1);
+//            follower.setMaxPower(1);
             SLIDE_HEIGHT = -1350;
             robot.smartServo.setPosition(SPEC_DROP_SMART+0.2);
             robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
@@ -205,7 +222,7 @@ public class Specimen extends LinearOpMode {
             robot.rightSlide.setPower(1);
             waitForLinearSlide(SLIDE_HEIGHT);
             followPath(path10);
-            follower.setMaxPower(0.9);
+//            follower.setMaxPower(0.9);
         }
     }
     public void followPath(PathChain path) {

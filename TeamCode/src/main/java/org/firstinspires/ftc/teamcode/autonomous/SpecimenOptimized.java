@@ -4,35 +4,28 @@ import static org.firstinspires.ftc.teamcode.teleop.PIDF.d;
 import static org.firstinspires.ftc.teamcode.teleop.PIDF.i;
 import static org.firstinspires.ftc.teamcode.teleop.PIDF.p;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOMINIT;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOM_OBSERVE;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOM_SCAN_SUB;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOM_TRANSFER;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.OFSETLEFT;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.OFSETRIGHT;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKEOPEN;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.CLOSEINTAKE;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKECLOSE;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_ARM;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_SMART;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_PICK_ARMSERVO;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_PICK_SMARTSERVO;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.TOPINIT;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.TOP_SCAN_SUB;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.pedropathing.pathgen.BezierPoint;
+import com.pedropathing.util.Drawing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierPoint;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Drawing;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Constants;
+import com.pedropathing.util.Timer;
 import org.firstinspires.ftc.teamcode.robot.TurtleRobot;
 
 @Config
@@ -89,16 +82,53 @@ public class SpecimenOptimized extends LinearOpMode {
 //                .setConstantHeadingInterpolation(0)
 
                 .build();
+        path1 = new Path(new BezierCurve(new Point(7, 57, Point.CARTESIAN),
+                new Point(30, 49, Point.CARTESIAN)));
+        path1.setLinearHeadingInterpolation(0, -Math.PI/4);
 
+        path2 = new Path(new BezierCurve(new Point(30, 49, Point.CARTESIAN),
+                new Point(20, 49, Point.CARTESIAN)));
+        path2.setConstantHeadingInterpolation(-Math.PI*2/3);
+
+        path3 = new Path(new BezierCurve(new Point(20, 49, Point.CARTESIAN),
+                new Point(30, 75, Point.CARTESIAN),
+                new Point(30, 35, Point.CARTESIAN)));
+        path3.setLinearHeadingInterpolation(-Math.PI*2/3, -Math.PI/4);
+
+        path4 = new Path(new BezierCurve(new Point(30, 35, Point.CARTESIAN),
+                new Point(20, 39, Point.CARTESIAN)));
+        path4.setLinearHeadingInterpolation(-Math.PI/4, -Math.PI*2/3);
+
+        path5 = new Path(new BezierCurve(new Point(20, 39, Point.CARTESIAN),
+                new Point(7, 57, Point.CARTESIAN)));
+        path5.setConstantHeadingInterpolation(0);
 
         waitForStart();
+
+        followPath(path1);
+        sleep(1000);
 
         robot.leftHorizontalSlide.setPosition(0.8);
         robot.rightHorizontalSlide.setPosition(0.8);
         robot.topLeft.setPosition(0.62);
         robot.bottomRight.setPosition(BOTTOM_SCAN_SUB - 0.24);
         robot.bottomLeft.setPosition(BOTTOM_SCAN_SUB + 0.24);
-        followPath(paths);
+        robot.intake.setPosition(CLOSEINTAKE);
+
+        sleep(500);
+
+        followPath(path2);
+        sleep(1000);
+        followPath(path3);
+        sleep(1000);
+        followPath(path4);
+        sleep(1000);
+        robot.topLeft.setPosition(TOPINIT);
+        robot.bottomRight.setPosition(BOTTOMINIT);
+        robot.bottomLeft.setPosition(BOTTOMINIT);
+        robot.leftHorizontalSlide.setPosition(0);
+        robot.rightHorizontalSlide.setPosition(0);
+        followPath(path5);
     }
     public void followPath(PathChain path) {
         follower.followPath(path, true);
@@ -106,7 +136,7 @@ public class SpecimenOptimized extends LinearOpMode {
             UpdatePathAndTelemetry();
     }
     public void followPath(Path path) {
-        follower.followPath(path);
+        follower.followPath(path, true);
         while (follower.isBusy())
             UpdatePathAndTelemetry();
     }

@@ -1,17 +1,12 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.teleop.Teleop;
 
 public class TurtleRobot {
     /* Public OpMode members. */
@@ -63,10 +58,10 @@ public class TurtleRobot {
              * 5 - intake_claw
          * Expansion Hub:
          * Motors:
-             * 0 - rightBack
+             * 0 - rightBack (strafe odo)
              * 1 - leftBack
-             * 2 - right_actuator
-             * 3 - left_actuator
+             * 2 - right_actuator (right odo)
+             * 3 - left_actuator (left odo)
          * Servos:
              * 1 - smart_servo
              * 3 - outake_claw

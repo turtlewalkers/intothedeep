@@ -9,12 +9,15 @@ import static org.firstinspires.ftc.teamcode.teleop.PIDF.ticks_in_degrees;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Constants;
+import com.pedropathing.util.Timer;
 import org.firstinspires.ftc.teamcode.robot.TurtleRobot;
 import org.firstinspires.ftc.teamcode.teleop.Teleop;
 

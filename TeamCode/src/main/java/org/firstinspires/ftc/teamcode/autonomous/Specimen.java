@@ -18,19 +18,22 @@ import static org.firstinspires.ftc.teamcode.teleop.Teleop.TOP_SCAN_SUB;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.pedropathing.pathgen.BezierPoint;
+import com.pedropathing.util.Drawing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierPoint;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Drawing;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Constants;
+import com.pedropathing.util.Timer;
 import org.firstinspires.ftc.teamcode.robot.TurtleRobot;
 
 @Config
@@ -89,7 +92,7 @@ public class Specimen extends LinearOpMode {
 
                 .addPath(new BezierCurve(new Point(26, 15, Point.CARTESIAN),
                         new Point(70, 14, Point.CARTESIAN),
-                        new Point(50, 8, Point.CARTESIAN))) // path6
+                        new Point(50, 10, Point.CARTESIAN))) // path6
                 .setConstantHeadingInterpolation(0)
 
                 .addPath(new BezierCurve(new Point(60, 10, Point.CARTESIAN),
@@ -134,9 +137,10 @@ public class Specimen extends LinearOpMode {
 
         path10 = follower.pathBuilder()
                         .addPath(new BezierCurve(new Point(35, 68, Point.CARTESIAN),
-                                new Point(19, 30, Point.CARTESIAN),
+                                new Point(10, 23, Point.CARTESIAN),
                                 new Point(23, 36, Point.CARTESIAN),
-                                new Point(9, 36, Point.CARTESIAN)))
+                                new Point(16, 36, Point.CARTESIAN),
+                                new Point(8, 36, Point.CARTESIAN)))
                         .setConstantHeadingInterpolation(0)
                                 .build();
 
@@ -156,7 +160,7 @@ public class Specimen extends LinearOpMode {
         robot.topLeft.setPosition(TOP_SCAN_SUB);
         robot.bottomRight.setPosition(BOTTOM_TRANSFER + OFSETRIGHT);
         robot.bottomLeft.setPosition(BOTTOM_TRANSFER + OFSETLEFT);
-        followPath(path1);
+        followPath(path1, true);
         SLIDE_HEIGHT = -1350;
         robot.smartServo.setPosition(SPEC_DROP_SMART+0.2);
         robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
@@ -181,7 +185,7 @@ public class Specimen extends LinearOpMode {
         waitForLinearSlide(SLIDE_HEIGHT);
 //        followPath(path2);
 
-        followPath(paths);
+        followPath(paths, false);
 
 //        followPath(path8);
 //        follower.setMaxPower(0.9);
@@ -198,7 +202,7 @@ public class Specimen extends LinearOpMode {
             waitForLinearSlide(SLIDE_HEIGHT);
             robot.smartServo.setPosition(SPEC_DROP_SMART);
             robot.arm.setPosition(SPEC_DROP_ARM);
-            followPath(path9);
+            followPath(path9, true);
 //            follower.setMaxPower(1);
             SLIDE_HEIGHT = -1350;
             robot.smartServo.setPosition(SPEC_DROP_SMART+0.2);
@@ -221,17 +225,17 @@ public class Specimen extends LinearOpMode {
             robot.leftSlide.setPower(1);
             robot.rightSlide.setPower(1);
             waitForLinearSlide(SLIDE_HEIGHT);
-            followPath(path10);
+            followPath(path10, false);
 //            follower.setMaxPower(0.9);
         }
     }
-    public void followPath(PathChain path) {
-        follower.followPath(path);
+    public void followPath(PathChain path, boolean holdEnd) {
+        follower.followPath(path, holdEnd);
         while (follower.isBusy())
             UpdatePathAndTelemetry();
     }
-    public void followPath(Path path) {
-        follower.followPath(path, true);
+    public void followPath(Path path, boolean holdEnd) {
+        follower.followPath(path, holdEnd);
         while (follower.isBusy())
             UpdatePathAndTelemetry();
     }

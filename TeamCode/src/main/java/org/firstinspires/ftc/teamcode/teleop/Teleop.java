@@ -42,26 +42,26 @@ public class Teleop extends LinearOpMode {
     public static double BASKET_SMARTSERVO = 1;
     public static double BASKET_ARMSERVO = 0.48;
     public static double TX_PICKUP_ARMSERVO =  0.02; //0.11
-    public static double SPEC_DROP_SMART = 0.8;
+    public static double SPEC_DROP_SMART = 0;
     public static double SPEC_DROP_ARM = 0;
-    public static double OPENINTAKE = 0.7; //0.7
-    public static double CLOSEINTAKE = 0.01; //0.01
+    public static double OPENINTAKE = 0.01; //0.7
+    public static double CLOSEINTAKE = 0.7; //0.01
     public static double TOP_OBSERVE = 0.42; // 0.53
     public static double BOTTOM_OBSERVE = 0.85; //0.85
     public static double TOP_TRANSFER = 0.4;  //0.4
     public static double BOTTOM_TRANSFER = 0.1;  //0.1
-    public static double TOP_PICK = 0.48;  // 0.61
+    public static double TOP_PICK = 0.55;  // 0.61
     public static double BOTTOM_PICK = 0.85; // 0.8
     public static double BOTTOMINIT = 0.2;
     public static double PICKING_UP = 0.85;
     public static double PADLEFT = 0.1;
-    public static double TOP_SCAN_SUB = 0.53;
+    public static double TOP_SCAN_SUB = 0.46;
     public static double BOTTOM_SCAN_SUB = 0.56;
     public static double TOPINIT = TOP_TRANSFER;
     public static double HANG;
     public static double maxmove = 0.8; //0.6
     boolean servolock = false;
-    public static double SPEC_PICK_SMARTSERVO = 0.4;
+    public static double SPEC_PICK_SMARTSERVO = 0.65;
     public static double SPEC_PICK_ARMSERVO = 0.95;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
@@ -83,6 +83,7 @@ public class Teleop extends LinearOpMode {
     double right_command;
     boolean gotoobserve = true;
     private Limelight3A limelight;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -134,7 +135,7 @@ public class Teleop extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            double divisor = 0.9;
+            double divisor = 1;
             if (gamepad1.left_trigger != 0) {
                 divisor = 2.5;
             }
@@ -168,7 +169,12 @@ public class Teleop extends LinearOpMode {
 
             if (timer.milliseconds() >= 50 && timer.milliseconds() <= 100) {
                 robot.intake.setPosition(CLOSEINTAKE);
+                if (robot.intake.getPosition() == CLOSEINTAKE) {
+                    robot.light.setPosition(0.5);
+                }
             }
+            robot.light.setPosition(0);
+
             telemetry.addData("intakeclawposition", robot.intake.getPosition());
             if (gamepad2.y) { // Observes
                 Log.d("OBSERVE", String.valueOf(robot.topLeft.getPosition()));
@@ -205,15 +211,15 @@ public class Teleop extends LinearOpMode {
 
                 if (gamepad2.dpad_right && gamepad2.y) {
                     limelight.pipelineSwitch(1); // blue
-                    robot.light.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+                    robot.light.setPosition(0.611);
                 }
-                if (gamepad2.dpad_up&& gamepad2.y) {
+                if (gamepad2.dpad_up&& gamepad2.y) { //yellow
                     limelight.pipelineSwitch(0);
-                    robot.light.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW); // yellow
+                    robot.light.setPosition(0.388);
                 }
                 if (gamepad2.dpad_down && gamepad2.y) {
                     limelight.pipelineSwitch(2); // red
-                    robot.light.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+                    robot.light.setPosition(0.279);
                 }
 
                 if (gamepad2.y && gamepad2.dpad_left) {
@@ -294,7 +300,7 @@ public class Teleop extends LinearOpMode {
 
                                     robot.bottomRight.setPosition(BOTTOM_OBSERVE + theta / 90 * 5);
                                     robot.bottomLeft.setPosition(BOTTOM_OBSERVE - theta / 90 * 5);
-                                    robot.light.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                                    robot.light.setPosition(0.500);
                                 }
                                 telemetry.update();
 
@@ -321,9 +327,9 @@ public class Teleop extends LinearOpMode {
             }
 
             if (gamepad2.left_bumper) {
-                robot.intake.setPosition(OPENINTAKE);
-            } else if (gamepad2.right_bumper) {
                 robot.intake.setPosition(CLOSEINTAKE);
+            } else if (gamepad2.right_bumper) {
+                robot.intake.setPosition(OPENINTAKE);
             }
 
 //            if (gamepad2.dpad_left) {

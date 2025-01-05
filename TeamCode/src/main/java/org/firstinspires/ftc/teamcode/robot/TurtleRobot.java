@@ -30,7 +30,7 @@ public class TurtleRobot {
     public Servo bottomRight = null;
     public Servo smartServo = null;
     public Servo arm = null;
-    public RevBlinkinLedDriver light = null;
+    public Servo light = null;
     /* local OpMode members. */
     HardwareMap hwMap = null;
     public ElapsedTime period = new ElapsedTime();
@@ -82,7 +82,7 @@ public class TurtleRobot {
         leftHorizontalSlide = hwMap.get(Servo.class, "left_horizontal_slide");
         rightHorizontalSlide = hwMap.get(Servo.class, "right_horizontal_slide");
 
-        light = hwMap.get(RevBlinkinLedDriver.class, "light");
+        light = hwMap.get(Servo.class, "light");
         intake = hwMap.get(Servo.class, "intake_claw");
         outtake = hwMap.get(Servo.class, "outake_claw");
         topLeft = hwMap.get(Servo.class, "top_servo");

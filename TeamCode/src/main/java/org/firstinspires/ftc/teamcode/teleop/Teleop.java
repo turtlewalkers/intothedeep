@@ -13,7 +13,6 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -37,42 +36,48 @@ public class Teleop extends LinearOpMode {
     public static double OUTTAKECLOSE = 1; // close
     public static double SMARTSERVO1 = 0.6;
     public static double SMARTSERVO2 = 0.15;
-    public static double TX_PICKUP_SMARTSERVO = 0.46;  //0.4
+    public static double OFFSET_SMARTSERVO = 0.3;
+    public static double TX_PICKUP_SMARTSERVO = 0.46 + OFFSET_SMARTSERVO; //0.4
     public static double HORIZONTALSLIDE = 0;
-    public static double BASKET_SMARTSERVO = 1;
+    public static double BASKET_SMARTSERVO = 1 + OFFSET_SMARTSERVO;
     public static double BASKET_ARMSERVO = 0.48;
     public static double TX_PICKUP_ARMSERVO =  0.02; //0.11
-    public static double SPEC_DROP_SMART = 0;
-    public static double SPEC_DROP_ARM = 0;
+    public static double SPEC_DROP_SMART = 0.8;
+    public static double SPEC_DROP_ARM = 0.16;
+    public static double SMART_SERVO_FLEX = 0.65;
     public static double OPENINTAKE = 0.01; //0.7
     public static double CLOSEINTAKE = 0.7; //0.01
-    public static double TOP_OBSERVE = 0.42; // 0.53
+    public static double TOP_OBSERVE = 0.26; // 0.53
     public static double BOTTOM_OBSERVE = 0.85; //0.85
-    public static double TOP_TRANSFER = 0.4;  //0.4
-    public static double BOTTOM_TRANSFER = 0.1;  //0.1
-    public static double TOP_PICK = 0.55;  // 0.61
+    public static double TOP_TRANSFER = 0.2;  //0.4
+    public static double BOTTOM_TRANSFER = 0.13;  //0.1
+    public static double TOP_PICK = 0.3;  // 0.61
     public static double BOTTOM_PICK = 0.85; // 0.8
     public static double BOTTOMINIT = 0.2;
     public static double PICKING_UP = 0.85;
     public static double PADLEFT = 0.1;
     public static double TOP_SCAN_SUB = 0.46;
-    public static double BOTTOM_SCAN_SUB = 0.56;
+    public static double BOTTOM_SCAN_SUB = 0.26;
     public static double TOPINIT = TOP_TRANSFER;
     public static double HANG;
     public static double maxmove = 0.8; //0.6
     boolean servolock = false;
-    public static double SPEC_PICK_SMARTSERVO = 0.65;
+    public static double SPEC_PICK_SMARTSERVO = 0.65 + OFFSET_SMARTSERVO;
     public static double SPEC_PICK_ARMSERVO = 0.95;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
     double BOTTOM_RIGHT = BOTTOMINIT;
     public static double OFSETRIGHT = 0.01;
     public static double OFSETLEFT = -0.02;
-
+    public static double x1 = 0;
+    public static int x2 = -900;
+    public static int x3 = -450;
+    public static double x4 = 0.2;
 
 
     static final double COUNTS_PER_MOTOR_REV = 384.5;
     static final double DRIVE_GEAR_REDUCTION = 1.0;
+
     static final double PULLEY_DIAMETER_INCHES = 1.404;
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)
             / (PULLEY_DIAMETER_INCHES * Math.PI);
@@ -91,6 +96,7 @@ public class Teleop extends LinearOpMode {
         ElapsedTime timer = new ElapsedTime();
         ElapsedTime tim = new ElapsedTime();
         ElapsedTime padb = new ElapsedTime();
+        ElapsedTime drop = new ElapsedTime();
         PIDController controller = new PIDController(PIDF.p, PIDF.i, PIDF.d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.topLeft.setPosition(TOPINIT);
@@ -103,7 +109,7 @@ public class Teleop extends LinearOpMode {
         PICKING_UP = 0.85;
         HORIZONTALSLIDE = 0;
         HANG = 0;
-        robot.smartServo.setPosition(0.3);
+        robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO - 0.2);
         robot.arm.setPosition(1);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -367,9 +373,9 @@ public class Teleop extends LinearOpMode {
 
             if (gamepad1.dpad_left) { // outtake action - pick specimen drop
                 robot.outtake.setPosition(OUTTAKECLOSE);
-                robot.smartServo.setPosition(0);
+                robot.smartServo.setPosition(SPEC_DROP_SMART);
                 robot.arm.setPosition(SPEC_DROP_ARM);
-                SLIDE_HEIGHT = -640;
+                SLIDE_HEIGHT = x3;
                 tim.reset();
 
             }
@@ -383,11 +389,16 @@ public class Teleop extends LinearOpMode {
                 SLIDE_HEIGHT = 0;
             }
             if (gamepad1.y) {
-                SLIDE_HEIGHT = -1350;
-                if (robot.leftSlide.getCurrentPosition() <= -1250) {
-                    robot.outtake.setPosition(OUTTAKEOPEN);
-                }
+//                SLIDE_HEIGHT = -1000;
+                robot.arm.setPosition(SPEC_DROP_ARM + x1);
+                robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO - x4);
+                SLIDE_HEIGHT = x2;
+                drop.reset();
             }
+            if (drop.milliseconds() >= 150 && drop.milliseconds() <= 200) {
+                robot.outtake.setPosition(OUTTAKEOPEN);
+            }
+
             if (gamepad1.b) {
                 robot.outtake.setPosition(OUTTAKECLOSE);
                 padb.reset();

@@ -27,6 +27,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.pedropathing.pathgen.BezierPoint;
 import com.pedropathing.util.Drawing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -45,6 +46,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 import org.firstinspires.ftc.teamcode.robot.TurtleRobot;
 
 @Config
+@Disabled
 @Autonomous
 public class SpecimenOptimized extends LinearOpMode {
     private static int SLIDE_HEIGHT;

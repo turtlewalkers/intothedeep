@@ -99,6 +99,7 @@ public class Teleop extends LinearOpMode {
         ElapsedTime drop = new ElapsedTime();
         PIDController controller = new PIDController(PIDF.p, PIDF.i, PIDF.d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        waitForStart();
         robot.topLeft.setPosition(TOPINIT);
         //robot.topRight.setPosition(TOPINIT);
         robot.bottomRight.setPosition(BOTTOMINIT);
@@ -373,7 +374,7 @@ public class Teleop extends LinearOpMode {
 
             if (gamepad1.dpad_left) { // outtake action - pick specimen drop
                 robot.outtake.setPosition(OUTTAKECLOSE);
-                robot.smartServo.setPosition(SPEC_DROP_SMART);
+//                robot.smartServo.setPosition(SPEC_DROP_SMART);
                 robot.arm.setPosition(SPEC_DROP_ARM);
                 SLIDE_HEIGHT = x3;
                 tim.reset();

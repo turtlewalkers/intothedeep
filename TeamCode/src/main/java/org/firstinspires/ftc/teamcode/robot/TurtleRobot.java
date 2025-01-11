@@ -4,6 +4,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -98,6 +99,8 @@ public class TurtleRobot {
         rightBack.setDirection(DcMotorEx.Direction.FORWARD);
         leftSlide.setDirection(DcMotorEx.Direction.FORWARD);
         rightSlide.setDirection(DcMotorEx.Direction.REVERSE);
+        leftActuator.setDirection(DcMotorEx.Direction.FORWARD);
+        rightActuator.setDirection(DcMotorEx.Direction.REVERSE);
 
         leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

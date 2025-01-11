@@ -37,41 +37,41 @@ public class Teleop extends LinearOpMode {
     public static double SMARTSERVO1 = 0.6;
     public static double SMARTSERVO2 = 0.15;
     public static double OFFSET_SMARTSERVO = 0.3;
-    public static double TX_PICKUP_SMARTSERVO = 0.46 + OFFSET_SMARTSERVO; //0.4
+    public static double TX_PICKUP_SMARTSERVO = 0.7 + OFFSET_SMARTSERVO; //0.4
     public static double HORIZONTALSLIDE = 0;
     public static double BASKET_SMARTSERVO = 1 + OFFSET_SMARTSERVO;
     public static double BASKET_ARMSERVO = 0.48;
-    public static double TX_PICKUP_ARMSERVO =  0.02; //0.11
+    public static double TX_PICKUP_ARMSERVO =  0.03; //0.11
     public static double SPEC_DROP_SMART = 0.8;
-    public static double SPEC_DROP_ARM = 0.16;
+    public static double SPEC_DROP_ARM = 0.12;
     public static double SMART_SERVO_FLEX = 0.65;
     public static double OPENINTAKE = 0.01; //0.7
     public static double CLOSEINTAKE = 0.7; //0.01
-    public static double TOP_OBSERVE = 0.26; // 0.53
+    public static double TOP_OBSERVE = 0.22; // 0.53
     public static double BOTTOM_OBSERVE = 0.85; //0.85
-    public static double TOP_TRANSFER = 0.2;  //0.4
-    public static double BOTTOM_TRANSFER = 0.13;  //0.1
-    public static double TOP_PICK = 0.3;  // 0.61
+    public static double TOP_TRANSFER = 0.15;  //0.4
+    public static double BOTTOM_TRANSFER = 0.15;  //0.1
+    public static double TOP_PICK = 0.33;  // 0.61
     public static double BOTTOM_PICK = 0.85; // 0.8
     public static double BOTTOMINIT = 0.2;
     public static double PICKING_UP = 0.85;
     public static double PADLEFT = 0.1;
-    public static double TOP_SCAN_SUB = 0.46;
-    public static double BOTTOM_SCAN_SUB = 0.26;
+    public static double TOP_SCAN_SUB = 0.22;
+    public static double BOTTOM_SCAN_SUB = 0.56;
     public static double TOPINIT = TOP_TRANSFER;
     public static double HANG;
     public static double maxmove = 0.8; //0.6
     boolean servolock = false;
-    public static double SPEC_PICK_SMARTSERVO = 0.65 + OFFSET_SMARTSERVO;
-    public static double SPEC_PICK_ARMSERVO = 0.95;
+    public static double SPEC_PICK_SMARTSERVO = 0.61 + OFFSET_SMARTSERVO;
+    public static double SPEC_PICK_ARMSERVO = 0.81;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
     double BOTTOM_RIGHT = BOTTOMINIT;
     public static double OFSETRIGHT = 0.01;
     public static double OFSETLEFT = -0.02;
     public static double x1 = 0;
-    public static int x2 = -900;
-    public static int x3 = -450;
+    public static int x2 = -1000;
+    public static int x3 = -380;
     public static double x4 = 0.2;
 
 
@@ -390,12 +390,12 @@ public class Teleop extends LinearOpMode {
             }
             if (gamepad1.y) {
 //                SLIDE_HEIGHT = -1000;
-                robot.arm.setPosition(SPEC_DROP_ARM + x1);
-                robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO - x4);
+                //robot.arm.setPosition(SPEC_DROP_ARM + x1);
+                //robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO - x4);
                 SLIDE_HEIGHT = x2;
                 drop.reset();
             }
-            if (drop.milliseconds() >= 150 && drop.milliseconds() <= 200) {
+            if (drop.milliseconds() >= 75 && drop.milliseconds() <= 125) {
                 robot.outtake.setPosition(OUTTAKEOPEN);
             }
 

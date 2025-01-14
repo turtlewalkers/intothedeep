@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing.tuners_tests.pid;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.pedropathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.Point;

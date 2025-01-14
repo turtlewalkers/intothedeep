@@ -1,5 +1,15 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.BASKET_ARMSERVO;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.BASKET_SMARTSERVO;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOM_PICK;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOM_TRANSFER;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKECLOSE;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKEOPEN;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_ARM;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_SMART;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_PICK_ARMSERVO;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.TOP_TRANSFER;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.TX_PICKUP_ARMSERVO;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.TX_PICKUP_SMARTSERVO;
 
@@ -11,7 +21,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import com.pedropathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
@@ -35,7 +45,7 @@ public class Sample extends LinearOpMode {
 
     private Follower follower;
 
-    private Path path1, path2, path3, path4, path5, path6;
+    private Path path1, path2, path3, path4, path5, path6, park;
 
     private PIDController controller;
 
@@ -46,9 +56,11 @@ public class Sample extends LinearOpMode {
         robot.init(hardwareMap);
         robot.topLeft.setPosition(0);
         //robot.topRight.setPosition(0);
-        robot.bottomRight.setPosition(0.1);
-        robot.bottomLeft.setPosition(0.1);
-        robot.outtake.setPosition(1);
+        robot.bottomRight.setPosition(BOTTOM_TRANSFER);
+        robot.bottomLeft.setPosition(BOTTOM_TRANSFER);
+        robot.outtake.setPosition(OUTTAKECLOSE);
+//        robot.arm.setPosition(TX_PICKUP_ARMSERVO);
+//        robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
         robot.leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -64,43 +76,55 @@ public class Sample extends LinearOpMode {
         path1 = new Path(new BezierCurve(new Point(10,104,Point.CARTESIAN), new Point(17,120,Point.CARTESIAN)));
         path1.setConstantHeadingInterpolation(-Math.PI / 4);
         // go to position for dropping sample
-        path2 = new Path(new BezierCurve(new Point(15,120,Point.CARTESIAN), new Point(16,125,Point.CARTESIAN)));
+        path2 = new Path(new BezierCurve(new Point(15,120,Point.CARTESIAN), new Point(17,125,Point.CARTESIAN)));
         path2.setConstantHeadingInterpolation(-Math.PI / 4);
         // first one
-        path3 = new Path(new BezierCurve(new Point(15,126,Point.CARTESIAN), new Point(18, 123, Point.CARTESIAN)));
+        path3 = new Path(new BezierCurve(new Point(16,125,Point.CARTESIAN), new Point(20, 121, Point.CARTESIAN)));
         path3.setConstantHeadingInterpolation(0);
         path4 = new Path(new BezierCurve(new Point(23,125, Point.CARTESIAN), new Point(18,124, Point.CARTESIAN)));
         path4.setConstantHeadingInterpolation(-Math.PI / 4);
         // second one
-        path5 = new Path(new BezierCurve(new Point(17, 126, Point.CARTESIAN), new Point(19, 128, Point.CARTESIAN)));
+        path5 = new Path(new BezierCurve(new Point(16, 125, Point.CARTESIAN), new Point(20, 128, Point.CARTESIAN)));
         path5.setConstantHeadingInterpolation(0);
         // third one
-        path6 = new Path(new BezierCurve(new Point(20, 129, Point.CARTESIAN), new Point(25, 133, Point.CARTESIAN)));
-        path6.setConstantHeadingInterpolation(Math.PI / 8);
+        path6 = new Path(new BezierCurve(new Point(16, 125, Point.CARTESIAN), new Point(25, 128, Point.CARTESIAN)));
+        path6.setConstantHeadingInterpolation(Math.PI / 6);
+        park = new Path(new BezierCurve(new Point(18, 123, Point.CARTESIAN),
+                new Point(105, 98, Point.CARTESIAN),
+                new Point(65, 98, Point.CARTESIAN)));
+        park.setConstantHeadingInterpolation(Math.PI/2);
 
         waitForStart();
 
         // drop the first one
-        followPath(path1);
+        followPath(path2);
+        robot.arm.setPosition(TX_PICKUP_ARMSERVO);
+        robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
         int linearSlideTargetHeight = -2350;
-//        SLIDE_HEIGHT = -2350;
-//        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.leftSlide.setPower(1);
-//        robot.rightSlide.setPower(1);
-//        robot.leftHorizontalSlide.setPosition(0);
-//        robot.rightHorizontalSlide.setPosition(0);
-//        waitForLinearSlide(linearSlideTargetHeight);
+        SLIDE_HEIGHT = -2350;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        robot.leftHorizontalSlide.setPosition(0);
+        robot.rightHorizontalSlide.setPosition(0);
+        waitForLinearSlide(linearSlideTargetHeight);
+        sleep(1000);
         robot.smartServo.setPosition(Teleop.BASKET_SMARTSERVO);
         robot.arm.setPosition(Teleop.BASKET_ARMSERVO);
 
-        sleep(1000);
+        sleep(500);
 
-        followPath(path2);
-        sleep(250);
-        robot.outtake.setPosition(0);
+        robot.outtake.setPosition(OUTTAKEOPEN);
+
+        sleep(200);
+
+
+
+//        followPath(path2);
+//        sleep(250);
 
         // second sample
         //robot.topRight.setPosition(Teleop.TOP_OBSERVE);
@@ -112,23 +136,24 @@ public class Sample extends LinearOpMode {
         robot.bottomRight.setPosition(Teleop.BOTTOM_OBSERVE);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_OBSERVE);
 
-        sleep(500);
-        followPath(path3);
-
         linearSlideTargetHeight = 0;
-//        SLIDE_HEIGHT = 0;
-//        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.leftSlide.setPower(1);
-//        robot.rightSlide.setPower(1);
-//        waitForLinearSlide(linearSlideTargetHeight);
+        SLIDE_HEIGHT = 0;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        waitForLinearSlide(linearSlideTargetHeight);
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
         robot.intake.setPosition(Teleop.OPENINTAKE);
+        sleep(1100);
+
+//        sleep(500);
+        followPath(path3);
 //        sleep(500);
 
         robot.leftHorizontalSlide.setPosition(1);
@@ -141,11 +166,11 @@ public class Sample extends LinearOpMode {
         telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_PICK);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_PICK);
-        sleep(250);
+        sleep(200);
         robot.intake.setPosition(Teleop.CLOSEINTAKE);
 
 
-        sleep(500);
+        sleep(250);
 
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
@@ -155,32 +180,32 @@ public class Sample extends LinearOpMode {
         telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_TRANSFER);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_TRANSFER);
-        sleep(500);
         robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
-        followPath(path4);
-        sleep(200);
-        robot.arm.setPosition(TX_PICKUP_ARMSERVO);
-        robot.intake.setPosition(Teleop.OPENINTAKE);
-        sleep(200);
-        robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
         sleep(500);
-//        linearSlideTargetHeight = -2350;
-//        SLIDE_HEIGHT = -2350;
-//        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.leftSlide.setPower(1);
-//        robot.rightSlide.setPower(1);
-//        robot.leftHorizontalSlide.setPosition(0);
-//        robot.rightHorizontalSlide.setPosition(0);
-//        waitForLinearSlide(linearSlideTargetHeight);
+        robot.arm.setPosition(TX_PICKUP_ARMSERVO);
+//        followPath(path4);
+        sleep(300);
+        robot.intake.setPosition(Teleop.OPENINTAKE);
+        sleep(250);
+        robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
+        followPath(path2);
+        linearSlideTargetHeight = -2350;
+        SLIDE_HEIGHT = -2350;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        robot.leftHorizontalSlide.setPosition(0);
+        robot.rightHorizontalSlide.setPosition(0);
+        waitForLinearSlide(linearSlideTargetHeight);
+        sleep(1000);
         robot.smartServo.setPosition(Teleop.BASKET_SMARTSERVO);
         robot.arm.setPosition(Teleop.BASKET_ARMSERVO);
         sleep(750);
-        followPath(path2);
+        robot.outtake.setPosition(OUTTAKEOPEN);
         sleep(250);
-        robot.outtake.setPosition(0);
 
         // the third one
         //robot.topRight.setPosition(Teleop.TOP_OBSERVE);
@@ -193,23 +218,22 @@ public class Sample extends LinearOpMode {
         robot.topLeft.setPosition(Teleop.TOP_OBSERVE);
         robot.intake.setPosition(Teleop.OPENINTAKE);
 
-        sleep(500);
-        followPath(path5);
-        sleep(100);
-
-//        linearSlideTargetHeight = 0;
-//        SLIDE_HEIGHT = 0;
-//        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.leftSlide.setPower(1);
-//        robot.rightSlide.setPower(1);
-//        waitForLinearSlide(linearSlideTargetHeight);
+        linearSlideTargetHeight = 0;
+        SLIDE_HEIGHT = 0;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        waitForLinearSlide(linearSlideTargetHeight);
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
         robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
+
+        sleep(1150);
+        followPath(path5);
 
 //        sleep(1000);
 //
@@ -220,6 +244,7 @@ public class Sample extends LinearOpMode {
         telemetry.addData("right", robot.bottomRight.getPosition());
         telemetry.addData("left", robot.bottomLeft.getPosition());
         telemetry.update();
+
         robot.bottomRight.setPosition(Teleop.BOTTOM_PICK);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_PICK);
         robot.topLeft.setPosition(Teleop.TOP_PICK);
@@ -235,33 +260,36 @@ public class Sample extends LinearOpMode {
         telemetry.update();
         robot.bottomRight.setPosition(Teleop.BOTTOM_TRANSFER);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_TRANSFER);
-        sleep(500);
         robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
-        followPath(path4);
+        sleep(500);
+        robot.arm.setPosition(TX_PICKUP_ARMSERVO);
+//        followPath(path4);
         sleep(500);
         robot.intake.setPosition(Teleop.OPENINTAKE);
-        robot.arm.setPosition(TX_PICKUP_ARMSERVO);
         sleep(500);
         robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
         sleep(250);
 
-//        linearSlideTargetHeight = -2350;
-//        SLIDE_HEIGHT = -2350;
-//        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.leftSlide.setPower(1);
-//        robot.rightSlide.setPower(1);
-//        robot.leftHorizontalSlide.setPosition(0);
-//        robot.rightHorizontalSlide.setPosition(0);
-//        waitForLinearSlide(linearSlideTargetHeight);
+        followPath(path2);
+        followPath(path2);
+        sleep(250);
+        linearSlideTargetHeight = -2350;
+        SLIDE_HEIGHT = -2350;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        robot.leftHorizontalSlide.setPosition(0);
+        robot.rightHorizontalSlide.setPosition(0);
+        waitForLinearSlide(linearSlideTargetHeight);
+        sleep(1250);
         robot.smartServo.setPosition(Teleop.BASKET_SMARTSERVO);
         robot.arm.setPosition(Teleop.BASKET_ARMSERVO);
         sleep(500);
-        followPath(path2);
-        sleep(250);
-        robot.outtake.setPosition(0);
+        robot.outtake.setPosition(OUTTAKEOPEN);
+        sleep(100);
 
         // the fourth one
         //robot.topRight.setPosition(Teleop.TOP_OBSERVE);
@@ -273,30 +301,29 @@ public class Sample extends LinearOpMode {
         sleep(50);
         robot.topLeft.setPosition(Teleop.TOP_OBSERVE);
         robot.intake.setPosition(Teleop.OPENINTAKE);
+        linearSlideTargetHeight = 0;
+        SLIDE_HEIGHT = 0;
 
-        sleep(500);
-        followPath(path6);
-        sleep(100);
-
-//        linearSlideTargetHeight = 0;
-//        SLIDE_HEIGHT = 0;
-//        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.leftSlide.setPower(1);
-//        robot.rightSlide.setPower(1);
-//        waitForLinearSlide(linearSlideTargetHeight);
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        waitForLinearSlide(linearSlideTargetHeight);
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
 //        waitForLinearSlide(linearSlideTargetHeight);
         robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
 
+        sleep(1100);
+        followPath(path6);
+
 //        sleep(1000);
 
-        robot.leftHorizontalSlide.setPosition(0.5);
-        robot.rightHorizontalSlide.setPosition(0.5);
+        robot.leftHorizontalSlide.setPosition(1);
+        robot.rightHorizontalSlide.setPosition(1);
         sleep(500);
         //robot.topRight.setPosition(Teleop.TOP_PICK);
         telemetry.addData("right", robot.bottomRight.getPosition());
@@ -315,46 +342,54 @@ public class Sample extends LinearOpMode {
         telemetry.addData("right", robot.bottomRight.getPosition());
         telemetry.addData("left", robot.bottomLeft.getPosition());
         telemetry.update();
+
         robot.bottomRight.setPosition(Teleop.BOTTOM_TRANSFER);
         robot.bottomLeft.setPosition(Teleop.BOTTOM_TRANSFER);
         robot.topLeft.setPosition(Teleop.TOP_TRANSFER);
-        followPath(path4);
         sleep(500);
-        robot.intake.setPosition(Teleop.OPENINTAKE);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO);
+        sleep(300);
+        robot.intake.setPosition(Teleop.OPENINTAKE);
         sleep(250);
         robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
+        sleep(200);
 
-        followPath(path4);
-//        linearSlideTargetHeight = -2350;
-//        SLIDE_HEIGHT = -2350;
-//        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.leftSlide.setPower(1);
-//        robot.rightSlide.setPower(1);
+        followPath(path2);
+        followPath(path2);
+        linearSlideTargetHeight = -2350;
+        SLIDE_HEIGHT = -2350;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
         robot.leftHorizontalSlide.setPosition(0);
         robot.rightHorizontalSlide.setPosition(0);
+        sleep(1250);
 //        waitForLinearSlide(linearSlideTargetHeight);
         robot.smartServo.setPosition(Teleop.BASKET_SMARTSERVO);
         robot.arm.setPosition(Teleop.BASKET_ARMSERVO);
         sleep(1000);
-        followPath(path2);
+        robot.outtake.setPosition(OUTTAKEOPEN);
         sleep(500);
-        robot.outtake.setPosition(0);
 
-        followPath(path3);
+        linearSlideTargetHeight = 0;
+        SLIDE_HEIGHT = 0;
+        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
+        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSlide.setPower(1);
+        robot.rightSlide.setPower(1);
+        waitForLinearSlide(linearSlideTargetHeight);
+        robot.arm.setPosition(SPEC_DROP_ARM);
+        robot.smartServo.setPosition(SPEC_DROP_SMART);
 
-//        linearSlideTargetHeight = 0;
-//        SLIDE_HEIGHT = 0;
-//        robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-//        robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        robot.leftSlide.setPower(0.5);
-//        robot.rightSlide.setPower(0.5);
-//        waitForLinearSlide(linearSlideTargetHeight);
+        followPath(park);
+
+        robot.arm.setPosition(BASKET_ARMSERVO);
+        robot.smartServo.setPosition(BASKET_SMARTSERVO);
 
         waitForStart();
 
@@ -366,7 +401,7 @@ public class Sample extends LinearOpMode {
 
     }
     public void followPath(Path path) {
-        follower.followPath(path);
+        follower.followPath(path, true);
         while (follower.isBusy())
             UpdatePathAndTelemetry();
     }

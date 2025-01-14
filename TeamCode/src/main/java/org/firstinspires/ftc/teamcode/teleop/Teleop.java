@@ -28,6 +28,7 @@ import java.util.List;
 @Config
 @TeleOp
 public class Teleop extends LinearOpMode {
+    private static boolean CHECK = false;
     private ElapsedTime runtime = new ElapsedTime();
     public static int SLIDE_HEIGHT = 0;
     TurtleRobot robot = new TurtleRobot(this);
@@ -39,7 +40,7 @@ public class Teleop extends LinearOpMode {
     public static double OFFSET_SMARTSERVO = 0.3;
     public static double TX_PICKUP_SMARTSERVO = 0.7 + OFFSET_SMARTSERVO; //0.4
     public static double HORIZONTALSLIDE = 0;
-    public static double BASKET_SMARTSERVO = 1 + OFFSET_SMARTSERVO;
+    public static double BASKET_SMARTSERVO = 0.1 + OFFSET_SMARTSERVO;
     public static double BASKET_ARMSERVO = 0.48;
     public static double TX_PICKUP_ARMSERVO =  0.03; //0.11
     public static double SPEC_DROP_SMART = 0.8;
@@ -62,7 +63,7 @@ public class Teleop extends LinearOpMode {
     public static double HANG;
     public static double maxmove = 0.8; //0.6
     boolean servolock = false;
-    public static double SPEC_PICK_SMARTSERVO = 0.61 + OFFSET_SMARTSERVO;
+    public static double SPEC_PICK_SMARTSERVO = 0.86;
     public static double SPEC_PICK_ARMSERVO = 0.81;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
@@ -73,6 +74,7 @@ public class Teleop extends LinearOpMode {
     public static int x2 = -1000;
     public static int x3 = -380;
     public static double x4 = 0.2;
+    double actuatorPos = 0;
 
 
     static final double COUNTS_PER_MOTOR_REV = 384.5;
@@ -160,7 +162,14 @@ public class Teleop extends LinearOpMode {
             robot.rightHorizontalSlide.setPosition(HORIZONTALSLIDE);
             telemetry.addData("horizontal", HORIZONTALSLIDE);
 
-            double actuatorPos = gamepad2.right_trigger - gamepad2.left_trigger;
+            actuatorPos = gamepad2.right_trigger - gamepad2.left_trigger;
+            if (gamepad2.dpad_up) {
+                CHECK = true;
+            }
+
+            if (CHECK) {
+                actuatorPos = 0.6;
+            }
             robot.rightActuator.setPower(actuatorPos);
             robot.leftActuator.setPower(actuatorPos);
 
@@ -405,6 +414,10 @@ public class Teleop extends LinearOpMode {
                 padb.reset();
                 // continuous: -2600
                 // cascading: -850
+            }
+
+            if (gamepad2.start) {
+                robot.topLeft.setPosition(0);
             }
 
             if (padb.milliseconds() >= 50 && padb.milliseconds() <= 100) {

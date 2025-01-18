@@ -2,14 +2,11 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.BASKET_ARMSERVO;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.BASKET_SMARTSERVO;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOM_PICK;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.BOTTOM_TRANSFER;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKECLOSE;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKEOPEN;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_ARM;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_SMART;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_PICK_ARMSERVO;
-import static org.firstinspires.ftc.teamcode.teleop.Teleop.TOP_TRANSFER;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.TX_PICKUP_ARMSERVO;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.TX_PICKUP_SMARTSERVO;
 
@@ -21,15 +18,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.follower.Follower;
 import com.pedropathing.pathgen.BezierCurve;
-import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
-import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;

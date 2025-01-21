@@ -22,8 +22,8 @@ public class LConstants {
         ThreeWheelConstants.rightEncoderDirection = Encoder.REVERSE;
         ThreeWheelConstants.strafeEncoderDirection = Encoder.FORWARD;
 
-        PinpointConstants.forwardY = -5.5;
-        PinpointConstants.strafeX = 0;
+        PinpointConstants.forwardY = -5.25;
+        PinpointConstants.strafeX = -1;
         PinpointConstants.distanceUnit = DistanceUnit.INCH;
         PinpointConstants.hardwareMapName = "pinpoint";
         PinpointConstants.useYawScalar = false;

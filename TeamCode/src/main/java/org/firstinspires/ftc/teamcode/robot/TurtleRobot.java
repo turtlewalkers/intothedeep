@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -32,6 +34,9 @@ public class TurtleRobot {
     public Servo smartServo = null;
     public Servo arm = null;
     public Servo light = null;
+    public Servo spec = null;
+    public AnalogInput analogInput = null;
+    ColorSensor color;
     /* local OpMode members. */
     HardwareMap hwMap = null;
     public ElapsedTime period = new ElapsedTime();
@@ -63,10 +68,16 @@ public class TurtleRobot {
              * 1 - leftBack
              * 2 - right_actuator (right odo)
              * 3 - left_actuator (left odo)
+             * 4 - spec
          * Servos:
              * 1 - smart_servo
              * 3 - outake_claw
              * 5 - arm_servo
+         * Servo Hub:
+             * 0 - bottom_left
+             * 1 - left_horizontal_slide
+             * 3 - right_horizontal_slide
+             * 5 - bottom_right
         **/
 
         // Save reference to Hardware map
@@ -82,7 +93,7 @@ public class TurtleRobot {
         leftActuator = hwMap.get(DcMotorEx.class, "left_actuator");
         leftHorizontalSlide = hwMap.get(Servo.class, "left_horizontal_slide");
         rightHorizontalSlide = hwMap.get(Servo.class, "right_horizontal_slide");
-
+        analogInput = hwMap.get(AnalogInput.class, "myanaloginput");
         light = hwMap.get(Servo.class, "light");
         intake = hwMap.get(Servo.class, "intake_claw");
         outtake = hwMap.get(Servo.class, "outake_claw");
@@ -92,6 +103,8 @@ public class TurtleRobot {
         bottomRight = hwMap.get(Servo.class, "bottom_right");
         smartServo = hwMap.get(Servo.class, "smart_servo");
         arm = hwMap.get(Servo.class, "arm_servo");
+        color = hwMap.get(ColorSensor.class, "Color");
+        spec = hwMap.get(Servo.class, "spec");
 
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
         leftBack.setDirection(DcMotorEx.Direction.REVERSE);

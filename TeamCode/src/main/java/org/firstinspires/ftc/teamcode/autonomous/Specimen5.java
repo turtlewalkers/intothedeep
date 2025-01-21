@@ -30,6 +30,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.pedropathing.pathgen.BezierPoint;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Drawing;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -41,7 +42,6 @@ import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
-import com.pedropathing.follower.Follower;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
@@ -56,17 +56,17 @@ public class Specimen5 extends LinearOpMode {
     private ElapsedTime STOP;
 
     private Follower follower;
-    private PathChain paths, path10, path8;
-    private Path path1, path2, path3, path4, path5, path6, path7, path11;
+    private PathChain paths, path8;
+    private Path path1, path2, path3, path4, path5, path6, path7, path11, path10;
     private Path path9;
     private PIDController controller;
 
     private Path sample1, sample2, sample3, sample4;
 
-    public static double sample1x = 20;
-    public static double sample1y = 28;
-    public static double sample2x = 19;
-    public static double sample2y = 16;
+    public static double sample1x = 21;
+    public static double sample1y = 30;
+    public static double sample2x = 20;
+    public static double sample2y = 17;
     public static double sample3x = 21;
     public static double sample3y = 16;
 
@@ -75,7 +75,7 @@ public class Specimen5 extends LinearOpMode {
         controller = new PIDController(p, i, d);
         robot.init(hardwareMap);
         STOP = new ElapsedTime();
-        robot.topLeft.setPosition(TOP_SCAN_SUB);
+        robot.topLeft.setPosition(0);
         robot.bottomRight.setPosition(BOTTOM_TRANSFER);
         robot.bottomLeft.setPosition(BOTTOM_TRANSFER);
 //        robot.smartServo.setPosition(SPEC_DROP_SMART);
@@ -88,7 +88,7 @@ public class Specimen5 extends LinearOpMode {
         follower.setStartingPose(new Pose(7, 57, 0));
         timeElapsed = new ElapsedTime();
 
-        path1 = new Path(new BezierCurve(new Point(7, 57, Point.CARTESIAN), new Point(34, 72, Point.CARTESIAN)));
+        path1 = new Path(new BezierCurve(new Point(7, 57, Point.CARTESIAN), new Point(32, 72, Point.CARTESIAN)));
         path1.setConstantHeadingInterpolation(0);
 
 //        path2 = new Path(new BezierCurve(new Point(32, 68, Point.CARTESIAN), new Point(5, 25, Point.CARTESIAN), new Point(55, 36, Point.CARTESIAN)));
@@ -152,21 +152,28 @@ public class Specimen5 extends LinearOpMode {
                 .setConstantHeadingInterpolation(0)
                 .build();
 
-        path9 = new Path(new BezierCurve(new Point(7, 37, Point.CARTESIAN), new Point(35, 68, Point.CARTESIAN)));
+        path9 = new Path(new BezierCurve(new Point(7, 39, Point.CARTESIAN),
+//                new Point(20, 50, Point.CARTESIAN),
+                new Point(32, 68, Point.CARTESIAN)));
         path9.setConstantHeadingInterpolation(0);
 
-//        path10 = new Path(new BezierCurve(new Point(35, 68, Point.CARTESIAN), new Point(12, 35, Point.CARTESIAN)));
-//        path10.setConstantHeadingInterpolation(0);
+        path10 = new Path(new BezierCurve(new Point(35, 68, Point.CARTESIAN),
+                new Point(26,39, Point.CARTESIAN),
+                new Point(22, 36, Point.CARTESIAN)));
+        path10.setConstantHeadingInterpolation(0);
 
-        path10 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(33, 68, Point.CARTESIAN),
-//                                new Point(10, 23, Point.CARTESIAN),
-//                        new Point(23, 38, Point.CARTESIAN),
-                        new Point(14, 38, Point.CARTESIAN)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+//        path11 = new Path(new BezierCurve(new Point(17, 38, Point.CARTESIAN), new Point(14, 36, Point.CARTESIAN)));
+//        path11.setConstantHeadingInterpolation(0);
 
-        sample1 = new Path(new BezierCurve(new Point(35, 68, Point.CARTESIAN),
+//        path10 = follower.pathBuilder()
+//                .addPath(new BezierCurve(new Point(33, 68, Point.CARTESIAN),
+////                                new Point(10, 23, Point.CARTESIAN),
+////                        new Point(23, 38, Point.CARTESIAN),
+//                        new Point(17, 38, Point.CARTESIAN)))
+//                .setConstantHeadingInterpolation(0)
+//                .build();
+
+        sample1 = new Path(new BezierCurve(new Point(35, 70, Point.CARTESIAN),
                 new Point(sample1x, sample1y, Point.CARTESIAN)));
         sample1.setLinearHeadingInterpolation(0, 0);
 
@@ -177,9 +184,9 @@ public class Specimen5 extends LinearOpMode {
         sample3 = new Path(new BezierCurve(new Point(sample2x, sample2y, Point.CARTESIAN),
                 new Point(sample3x, sample3y, Point.CARTESIAN)));
         sample3.setConstantHeadingInterpolation(-Math.PI/6);
-        sample4 = new Path(new BezierCurve(new Point(20, 10, Point.CARTESIAN),
-                new Point(30, 42, Point.CARTESIAN),
-                new Point(13, 37, Point.CARTESIAN)));
+        sample4 = new Path(new BezierCurve(new Point(sample3x, sample3y, Point.CARTESIAN),
+                new Point(19, 33, Point.CARTESIAN),
+                new Point(13, 33, Point.CARTESIAN)));
         sample4.setConstantHeadingInterpolation(0);
 
         waitForStart();
@@ -235,7 +242,7 @@ public class Specimen5 extends LinearOpMode {
         robot.outtake.setPosition(OUTTAKEOPEN);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
         robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
-        sleep(400);
+        sleep(300);
         robot.topLeft.setPosition(TOP_PICK);
         robot.bottomRight.setPosition(BOTTOM_PICK);
         robot.bottomLeft.setPosition(BOTTOM_PICK);
@@ -265,7 +272,7 @@ public class Specimen5 extends LinearOpMode {
         robot.bottomLeft.setPosition(BOTTOM_OBSERVE);
         robot.intake.setPosition(OPENINTAKE);
 
-        followPath(sample2, false);
+        followPath(sample2, true);
 
         robot.outtake.setPosition(OUTTAKEOPEN);
         sleep(20);
@@ -299,7 +306,7 @@ public class Specimen5 extends LinearOpMode {
         robot.outtake.setPosition(OUTTAKECLOSE);
         sleep(250);
         robot.arm.setPosition(SPEC_PICK_ARMSERVO);
-        robot.smartServo.setPosition(SPEC_DROP_SMART);
+        robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
         robot.topLeft.setPosition(TOP_OBSERVE);
         robot.bottomRight.setPosition(BOTTOM_OBSERVE+0.2);
         robot.bottomLeft.setPosition(BOTTOM_OBSERVE-0.2);
@@ -314,12 +321,12 @@ public class Specimen5 extends LinearOpMode {
 
         robot.outtake.setPosition(OUTTAKEOPEN);
         sleep(20);
-//        robot.leftHorizontalSlide.setPosition(0.8);
-//        robot.rightHorizontalSlide.setPosition(0.8);
-//        robot.topLeft.setPosition(TOP_OBSERVE);
-//        robot.bottomRight.setPosition(BOTTOM_OBSERVE+0.2);
-//        robot.bottomLeft.setPosition(BOTTOM_OBSERVE-0.2);
-//        robot.intake.setPosition(OPENINTAKE);
+        robot.leftHorizontalSlide.setPosition(0.8);
+        robot.rightHorizontalSlide.setPosition(0.8);
+        robot.topLeft.setPosition(TOP_OBSERVE);
+        robot.bottomRight.setPosition(BOTTOM_OBSERVE+0.2);
+        robot.bottomLeft.setPosition(BOTTOM_OBSERVE-0.2);
+        robot.intake.setPosition(OPENINTAKE);
         robot.outtake.setPosition(OUTTAKEOPEN);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO+0.1);
         robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
@@ -353,13 +360,13 @@ public class Specimen5 extends LinearOpMode {
         robot.topLeft.setPosition(TOP_SCAN_SUB);
         robot.bottomRight.setPosition(BOTTOM_TRANSFER);
         robot.bottomLeft.setPosition(BOTTOM_TRANSFER);
-        followPath(sample4, true);
+        followPath(sample4, false);
 
 //        followPath(path8);
 //        follower.setMaxPower(0.9);
         for (int i = 0; i < 4; ++i) {
             robot.outtake.setPosition(OUTTAKECLOSE);
-            sleep(75);
+            sleep(100);
             SLIDE_HEIGHT = x3;
             robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
             robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
@@ -371,31 +378,7 @@ public class Specimen5 extends LinearOpMode {
             robot.outtake.setPosition(OUTTAKECLOSE);
             robot.smartServo.setPosition(SPEC_DROP_SMART);
             robot.arm.setPosition(SPEC_DROP_ARM);
-            if (STOP.milliseconds() >= 29000) {
-                SLIDE_HEIGHT = 0;
-                robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-                robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-                robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.leftSlide.setPower(1);
-                robot.rightSlide.setPower(1);
-                waitForLinearSlide(SLIDE_HEIGHT);
-                sleep(1500);
-                break;
-            }
             followPath(path9, false);
-            if (STOP.milliseconds() >= 29000) {
-                SLIDE_HEIGHT = 0;
-                robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-                robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-                robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.leftSlide.setPower(1);
-                robot.rightSlide.setPower(1);
-                waitForLinearSlide(SLIDE_HEIGHT);
-                sleep(1500);
-                break;
-            }
 //            follower.setMaxPower(1);
             SLIDE_HEIGHT = x2;
 //            robot.smartServo.setPosition(SPEC_DROP_SMART+0.2);
@@ -418,18 +401,6 @@ public class Specimen5 extends LinearOpMode {
             robot.leftSlide.setPower(1);
             robot.rightSlide.setPower(1);
             waitForLinearSlide(SLIDE_HEIGHT);
-            if (i == 3 || STOP.milliseconds() >= 29000) {
-                SLIDE_HEIGHT = 0;
-                robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
-                robot.rightSlide.setTargetPosition(SLIDE_HEIGHT);
-                robot.leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.leftSlide.setPower(1);
-                robot.rightSlide.setPower(1);
-                waitForLinearSlide(SLIDE_HEIGHT);
-                sleep(1500);
-                break;
-            }
             followPath(path10, true);
 //            follower.setMaxPower(0.9);
         }

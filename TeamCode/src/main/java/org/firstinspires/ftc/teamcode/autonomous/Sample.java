@@ -73,15 +73,15 @@ public class Sample extends LinearOpMode {
         path2 = new Path(new BezierCurve(new Point(15,120,Point.CARTESIAN), new Point(17,125,Point.CARTESIAN)));
         path2.setConstantHeadingInterpolation(-Math.PI / 4);
         // first one
-        path3 = new Path(new BezierCurve(new Point(16,125,Point.CARTESIAN), new Point(20, 121, Point.CARTESIAN)));
+        path3 = new Path(new BezierCurve(new Point(16,125,Point.CARTESIAN), new Point(18, 121, Point.CARTESIAN)));
         path3.setConstantHeadingInterpolation(0);
         path4 = new Path(new BezierCurve(new Point(23,125, Point.CARTESIAN), new Point(18,124, Point.CARTESIAN)));
         path4.setConstantHeadingInterpolation(-Math.PI / 4);
         // second one
-        path5 = new Path(new BezierCurve(new Point(16, 125, Point.CARTESIAN), new Point(20, 128, Point.CARTESIAN)));
+        path5 = new Path(new BezierCurve(new Point(16, 125, Point.CARTESIAN), new Point(18, 127, Point.CARTESIAN)));
         path5.setConstantHeadingInterpolation(0);
         // third one
-        path6 = new Path(new BezierCurve(new Point(16, 125, Point.CARTESIAN), new Point(25, 128, Point.CARTESIAN)));
+        path6 = new Path(new BezierCurve(new Point(16, 125, Point.CARTESIAN), new Point(20, 128, Point.CARTESIAN)));
         path6.setConstantHeadingInterpolation(Math.PI / 6);
         park = new Path(new BezierCurve(new Point(18, 123, Point.CARTESIAN),
                 new Point(105, 98, Point.CARTESIAN),
@@ -265,7 +265,6 @@ public class Sample extends LinearOpMode {
         sleep(250);
 
         followPath(path2);
-        followPath(path2);
         sleep(250);
         linearSlideTargetHeight = -2350;
         SLIDE_HEIGHT = -2350;
@@ -348,7 +347,6 @@ public class Sample extends LinearOpMode {
         robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
         sleep(200);
 
-        followPath(path2);
         followPath(path2);
         linearSlideTargetHeight = -2350;
         SLIDE_HEIGHT = -2350;

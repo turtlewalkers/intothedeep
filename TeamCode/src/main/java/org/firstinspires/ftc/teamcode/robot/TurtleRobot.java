@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class TurtleRobot {
@@ -39,6 +40,7 @@ public class TurtleRobot {
     ColorSensor color;
     /* local OpMode members. */
     HardwareMap hwMap = null;
+    public static VoltageSensor vSensor;
     public ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
@@ -105,6 +107,7 @@ public class TurtleRobot {
         arm = hwMap.get(Servo.class, "arm_servo");
         color = hwMap.get(ColorSensor.class, "Color");
         spec = hwMap.get(Servo.class, "spec");
+        vSensor = hwMap.voltageSensor.iterator().next();
 
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
         leftBack.setDirection(DcMotorEx.Direction.REVERSE);

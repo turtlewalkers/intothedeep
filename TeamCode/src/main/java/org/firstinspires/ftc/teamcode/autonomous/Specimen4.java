@@ -32,7 +32,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.pedropathing.pathgen.BezierPoint;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Drawing;
-import com.pedropathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -104,30 +104,30 @@ public class Specimen4 extends LinearOpMode {
 
                 .addPath(new BezierCurve(new Point(55, 36, Point.CARTESIAN),
                         new Point(50, 27, Point.CARTESIAN),
-                        new Point(26, 26, Point.CARTESIAN))) // path3
+                        new Point(28, 25, Point.CARTESIAN))) // path3
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(26, 26, Point.CARTESIAN),
+                .addPath(new BezierCurve(new Point(28, 25, Point.CARTESIAN),
                         new Point(70, 25, Point.CARTESIAN),
                         new Point(50, 17, Point.CARTESIAN))) // path4
                 .setConstantHeadingInterpolation(0)
 
                 .addPath(new BezierCurve(new Point(50, 17, Point.CARTESIAN),
-                        new Point(26, 17, Point.CARTESIAN))) // path5
+                        new Point(28, 17, Point.CARTESIAN))) // path5
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(26, 15, Point.CARTESIAN),
+                .addPath(new BezierCurve(new Point(28, 17, Point.CARTESIAN),
                         new Point(70, 14, Point.CARTESIAN),
                         new Point(50, 10, Point.CARTESIAN))) // path6
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(50, 10, Point.CARTESIAN),
-                        new Point(30, 10, Point.CARTESIAN))) // path7
+                .addPath(new BezierCurve(new Point(50, 9, Point.CARTESIAN),
+                        new Point(30, 9, Point.CARTESIAN))) // path7
                 .setConstantHeadingInterpolation(0)
 
-                .addPath(new BezierCurve(new Point(30, 10, Point.CARTESIAN),
+                .addPath(new BezierCurve(new Point(30, 9, Point.CARTESIAN),
                         new Point(30, 46, Point.CARTESIAN),
-                        new Point(9, 39, Point.CARTESIAN)))
+                        new Point(12, 37, Point.CARTESIAN)))
                 .setConstantHeadingInterpolation(0)
 
                 .build();
@@ -156,12 +156,12 @@ public class Specimen4 extends LinearOpMode {
                 .build();
 
         path9 = new Path(new BezierCurve(new Point(7, 39, Point.CARTESIAN),
-                new Point(42, 45, Point.CARTESIAN),
+                new Point(60, 45, Point.CARTESIAN),
                 new Point(32, 68, Point.CARTESIAN)));
         path9.setConstantHeadingInterpolation(0);
 
-        path10 = new Path(new BezierCurve(new Point(35, 68, Point.CARTESIAN),
-                new Point(26,39, Point.CARTESIAN),
+        path10 = new Path(new BezierCurve(new Point(32, 68, Point.CARTESIAN),
+                new Point(26,42, Point.CARTESIAN),
                 new Point(22, 36, Point.CARTESIAN)));
         path10.setConstantHeadingInterpolation(0);
 
@@ -218,7 +218,7 @@ public class Specimen4 extends LinearOpMode {
         robot.leftSlide.setPower(1);
         robot.rightSlide.setPower(1);
         waitForLinearSlide(SLIDE_HEIGHT);
-        sleep(200);
+        sleep(250);
         robot.outtake.setPosition(OUTTAKEOPEN);
         SLIDE_HEIGHT = 0;
         robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
@@ -255,7 +255,10 @@ public class Specimen4 extends LinearOpMode {
             robot.topLeft.setPosition(TOP_SCAN_SUB);
             robot.bottomRight.setPosition(BOTTOM_TRANSFER + OFSETRIGHT);
             robot.bottomLeft.setPosition(BOTTOM_TRANSFER + OFSETLEFT);
-            followPath(path1, false);
+            path9 = new Path(new BezierCurve(new Point(20, 36, Point.CARTESIAN),
+                    new Point(33, 70-2*i, Point.CARTESIAN)));
+            path9.setConstantHeadingInterpolation(0);
+            followPath(path9, false);
             SLIDE_HEIGHT = x2;
             robot.arm.setPosition(SPEC_DROP_ARM-0.07);
             robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);
@@ -278,6 +281,7 @@ public class Specimen4 extends LinearOpMode {
             robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
             robot.arm.setPosition(SPEC_PICK_ARMSERVO);
             robot.spec.setPosition(SPEC_SERVO_PICK);
+            path10.setConstantHeadingInterpolation(0);
             followPath(path10, true);
 //            follower.setMaxPower(0.9);
         }
@@ -294,9 +298,6 @@ public class Specimen4 extends LinearOpMode {
     }
     private void UpdatePathAndTelemetry(){
         follower.update();
-        Drawing.drawRobot(follower.getPose(), "#2e911a");
-        Drawing.drawPath(follower.getCurrentPath(),"#2e911a");
-        Drawing.sendPacket();
     }
     private void waitForLinearSlide(int linearSlideTarget) {
         new Thread(() -> {

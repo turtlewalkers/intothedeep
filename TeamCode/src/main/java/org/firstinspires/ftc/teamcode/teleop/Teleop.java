@@ -43,19 +43,19 @@ public class Teleop extends LinearOpMode {
     public static double OFFSET_SMARTSERVO = 0.3;
     public static double TX_PICKUP_SMARTSERVO = 0.7 + OFFSET_SMARTSERVO; //0.4
     public static double HORIZONTALSLIDE = 0;
-    public static double BASKET_SMARTSERVO = 0.1 + OFFSET_SMARTSERVO;
-    public static double BASKET_ARMSERVO = 0.48;
+    public static double BASKET_SMARTSERVO = 0;
+    public static double BASKET_ARMSERVO = 0.4;
     public static double TX_PICKUP_ARMSERVO = 0.03; //0.11
     public static double SPEC_DROP_SMART = 0.6;
-    public static double SPEC_DROP_ARM = 0.12;
+    public static double SPEC_DROP_ARM = 0.08;
     public static double SMART_SERVO_FLEX = 0.65;
-    public static double OPENINTAKE = 0.03; //0.7
-    public static double CLOSEINTAKE = 0.2; //0.01
+    public static double OPENINTAKE = 0.07; //0.7
+    public static double CLOSEINTAKE = 0.24; //0.01
     public static double TOP_OBSERVE = 0.22; // 0.53
     public static double BOTTOM_OBSERVE = 0.85; //0.85
     public static double TOP_TRANSFER = 0.15;  //0.4
     public static double BOTTOM_TRANSFER = 0.15;  //0.1
-    public static double TOP_PICK = 0.33;  // 0.61
+    public static double TOP_PICK = 0.345;  // 0.61
     public static double BOTTOM_PICK = 0.85; // 0.8
     public static double BOTTOMINIT = 0.2;
     public static double PICKING_UP = 0.85;
@@ -67,18 +67,18 @@ public class Teleop extends LinearOpMode {
     public static double maxmove = 0.8; //0.6
     boolean servolock = false;
     public static double SPEC_PICK_SMARTSERVO = 0.68;
-    public static double SPEC_PICK_ARMSERVO = 0.84;
+    public static double SPEC_PICK_ARMSERVO = 0.81;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
     double BOTTOM_RIGHT = BOTTOMINIT;
     public static double OFSETRIGHT = 0.01;
     public static double OFSETLEFT = -0.02;
-    public static double SPEC_SERVO_PICK = 0.7;
+    public static double SPEC_SERVO_PICK = 0.72;
     public static double SPEC_SERVO_DROP = 0;
     public static double SPEC_TRANSFER = 0.7;
     public static double x1 = 0;
-    public static int x2 = -200;
-    public static int x3 = -570; //-380
+    public static int x2 = -250;
+    public static int x3 = -660; //-380
     public static double x4 = 0.2;
     double actuatorPos = 0;
 
@@ -238,7 +238,7 @@ public class Teleop extends LinearOpMode {
                     BOTTOM_RIGHT = BOTTOM_OBSERVE;
                     gotoobserve = false;
                 }
-                double multiplier = 0.05;
+                double multiplier = 0.03;
 
                 if (!gamepad2.dpad_left) {
                     if (gamepad2.right_stick_x != 0) {

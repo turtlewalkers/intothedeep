@@ -66,8 +66,8 @@ public class Teleop extends LinearOpMode {
     public static double HANG;
     public static double maxmove = 0.8; //0.6
     boolean servolock = false;
-    public static double SPEC_PICK_SMARTSERVO = 0.68;
-    public static double SPEC_PICK_ARMSERVO = 0.81;
+    public static double SPEC_PICK_SMARTSERVO = 0.63;
+    public static double SPEC_PICK_ARMSERVO = 0.79;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
     double BOTTOM_RIGHT = BOTTOMINIT;

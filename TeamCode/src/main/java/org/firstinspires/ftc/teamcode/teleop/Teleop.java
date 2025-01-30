@@ -41,20 +41,20 @@ public class Teleop extends LinearOpMode {
     public static double SMARTSERVO1 = 0.6;
     public static double SMARTSERVO2 = 0.15;
     public static double OFFSET_SMARTSERVO = 0.3;
-    public static double TX_PICKUP_SMARTSERVO = 0.7 + OFFSET_SMARTSERVO; //0.4
+    public static double TX_PICKUP_SMARTSERVO = 0.84; //0.4
     public static double HORIZONTALSLIDE = 0;
     public static double BASKET_SMARTSERVO = 0;
     public static double BASKET_ARMSERVO = 0.4;
-    public static double TX_PICKUP_ARMSERVO = 0.03; //0.11
-    public static double SPEC_DROP_SMART = 0.6;
-    public static double SPEC_DROP_ARM = 0.08;
+    public static double TX_PICKUP_ARMSERVO = 0.07; //0.11
+    public static double SPEC_DROP_SMART = 0.4;
+    public static double SPEC_DROP_ARM = 0.07;
     public static double SMART_SERVO_FLEX = 0.65;
     public static double OPENINTAKE = 0.07; //0.7
     public static double CLOSEINTAKE = 0.24; //0.01
     public static double TOP_OBSERVE = 0.22; // 0.53
     public static double BOTTOM_OBSERVE = 0.85; //0.85
-    public static double TOP_TRANSFER = 0.15;  //0.4
-    public static double BOTTOM_TRANSFER = 0.15;  //0.1
+    public static double TOP_TRANSFER = 0.09;  //0.4
+    public static double BOTTOM_TRANSFER = 0.12;  //0.1
     public static double TOP_PICK = 0.345;  // 0.61
     public static double BOTTOM_PICK = 0.85; // 0.8
     public static double BOTTOMINIT = 0.2;
@@ -63,23 +63,23 @@ public class Teleop extends LinearOpMode {
     public static double TOP_SCAN_SUB = 0.22;
     public static double BOTTOM_SCAN_SUB = 0.56;
     public static double TOPINIT = TOP_TRANSFER;
-    public static double HANG;
+    public static double HANG = 0;
     public static double maxmove = 0.8; //0.6
     boolean servolock = false;
-    public static double SPEC_PICK_SMARTSERVO = 0.63;
-    public static double SPEC_PICK_ARMSERVO = 0.79;
+    public static double SPEC_PICK_SMARTSERVO = 0.60;
+    public static double SPEC_PICK_ARMSERVO = 0.89;
     public static double SLIDE = -1250;
     double BOTTOM_LEFT = BOTTOMINIT;
     double BOTTOM_RIGHT = BOTTOMINIT;
     public static double OFSETRIGHT = 0.01;
     public static double OFSETLEFT = -0.02;
-    public static double SPEC_SERVO_PICK = 0.72;
-    public static double SPEC_SERVO_DROP = 0;
-    public static double SPEC_TRANSFER = 0.7;
+    public static double SPEC_SERVO_PICK = 0.78;
+    public static double SPEC_SERVO_DROP = 0.04;
+    public static double SPEC_TRANSFER = 0.78; //heeheehee
     public static double x1 = 0;
-    public static int x2 = -250;
-    public static int x3 = -660; //-380
-    public static double x4 = 0.2;
+    public static int x2 = -100;
+    public static int x3 = -590; //-380
+    public static double SPACE_LIMIT;
     double actuatorPos = 0;
 
 
@@ -101,6 +101,7 @@ public class Teleop extends LinearOpMode {
     private int blue;
     private int green;
     private double volts;
+    private double hangStrength = 1;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -110,6 +111,7 @@ public class Teleop extends LinearOpMode {
         ElapsedTime padb = new ElapsedTime();
         ElapsedTime drop = new ElapsedTime();
         ElapsedTime getvoltage = new ElapsedTime();
+        ElapsedTime hang = new ElapsedTime();
         PIDController controller = new PIDController(PIDF.p, PIDF.i, PIDF.d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         waitForStart();
@@ -122,8 +124,7 @@ public class Teleop extends LinearOpMode {
 
         PICKING_UP = 0.85;
         HORIZONTALSLIDE = 0;
-        HANG = 0;
-        robot.smartServo.setPosition(SPEC_PICK_SMARTSERVO);
+        robot.smartServo.setPosition(1);
         robot.arm.setPosition(SPEC_PICK_ARMSERVO);
 
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -138,6 +139,8 @@ public class Teleop extends LinearOpMode {
         robot.intake.setPosition(CLOSEINTAKE);
         int startcolor = 0;
         double positiona = robot.analogInput.getVoltage();
+        CHECK = false;
+        hangStrength = 1;
 //        limelight.pipelineSwitch(0);
 //        limelight.start();
 
@@ -170,21 +173,37 @@ public class Teleop extends LinearOpMode {
             robot.rightFront.setPower(Math.cbrt(y - x - rx) / divisor);
             robot.rightBack.setPower(Math.cbrt(y + x - rx) / divisor);
 
-            HORIZONTALSLIDE -= gamepad2.left_stick_y / 20;
-            HORIZONTALSLIDE = min(HORIZONTALSLIDE, maxmove);
-            HORIZONTALSLIDE = max(HORIZONTALSLIDE, 0);
+            if (!CHECK) {
+                HORIZONTALSLIDE -= gamepad2.left_stick_y / 20;
+                HORIZONTALSLIDE = min(HORIZONTALSLIDE, maxmove);
+                HORIZONTALSLIDE = max(HORIZONTALSLIDE, 0);
 
-            robot.leftHorizontalSlide.setPosition(HORIZONTALSLIDE);
-            robot.rightHorizontalSlide.setPosition(HORIZONTALSLIDE);
-            telemetry.addData("horizontal", HORIZONTALSLIDE);
+                robot.leftHorizontalSlide.setPosition(HORIZONTALSLIDE);
+                robot.rightHorizontalSlide.setPosition(HORIZONTALSLIDE);
+                telemetry.addData("horizontal", HORIZONTALSLIDE);
+            }
 
-            actuatorPos = gamepad2.right_trigger - gamepad2.left_trigger;
+            if (!CHECK) {
+                actuatorPos = gamepad2.right_trigger - gamepad2.left_trigger;
+            }
+
             if (gamepad2.dpad_up) {
                 CHECK = true;
             }
 
             if (CHECK) {
-                actuatorPos = 0.6;
+                if (CHECK && hang.milliseconds() >= 5000) {
+                    hangStrength = 0.6;
+                } else {
+                    hangStrength = 1;
+                }
+                if (CHECK && hang.milliseconds() >= 10000) {
+                    hangStrength = 0;
+                }
+                actuatorPos = hangStrength;
+                hang.reset();
+                robot.rightHorizontalSlide.setPosition(0.2);
+                robot.leftHorizontalSlide.setPosition(0.2);
             }
             robot.rightActuator.setPower(actuatorPos);
             robot.leftActuator.setPower(actuatorPos);
@@ -413,13 +432,16 @@ public class Teleop extends LinearOpMode {
                 tim.reset();
 
             }
-            if (tim.milliseconds() >= 50 && tim.milliseconds() <= 100) {
-                robot.arm.setPosition(SPEC_DROP_ARM);
-                SLIDE_HEIGHT = x3;
+            if (tim.milliseconds() >= 10 && tim.milliseconds() <= 60) {
+                robot.smartServo.setPosition(1);
             }
-            if (tim.milliseconds() >= 200 && tim.milliseconds() <= 300) {
-                robot.smartServo.setPosition(SPEC_DROP_SMART);
+            if (tim.milliseconds() >= 100 && tim.milliseconds() <= 150) {
+                SLIDE_HEIGHT = x3;
                 robot.spec.setPosition(SPEC_SERVO_DROP);
+                robot.arm.setPosition(SPEC_DROP_ARM);
+            }
+            if (tim.milliseconds() >= 350 && tim.milliseconds() <= 400) {
+                robot.smartServo.setPosition(SPEC_DROP_SMART);
             }
             if (gamepad1.a) {
                 robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
@@ -491,8 +513,3 @@ public class Teleop extends LinearOpMode {
         }
     }
 }
-//        robot.topLeft.setPosition(robot.topLeft.getPosition());
-//        robot.topRight.setPosition(robot.topRight.getPosition());
-
-
-

@@ -1,4 +1,4 @@
-//package com.pedropathing.follower;
+//package org.firstinspires.ftc.teamcode.pedroPathing.follower;
 //
 //import static com.pedropathing.follower.FollowerConstants.automaticHoldEnd;
 //import static com.pedropathing.follower.FollowerConstants.cacheInvalidateSeconds;
@@ -10,6 +10,7 @@
 //import static com.pedropathing.follower.FollowerConstants.lateralZeroPowerAcceleration;
 //import static com.pedropathing.follower.FollowerConstants.leftFrontMotorName;
 //import static com.pedropathing.follower.FollowerConstants.leftRearMotorName;
+//import static com.pedropathing.follower.FollowerConstants.motorCachingThreshold;
 //import static com.pedropathing.follower.FollowerConstants.nominalVoltage;
 //import static com.pedropathing.follower.FollowerConstants.rightFrontMotorName;
 //import static com.pedropathing.follower.FollowerConstants.rightRearMotorName;
@@ -32,9 +33,8 @@
 //
 //import com.acmerobotics.dashboard.config.Config;
 //import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-//import com.pedropathing.util.Constants;
-//import com.pedropathing.util.CustomFilteredPIDFCoefficients;
-//import com.pedropathing.util.CustomPIDFCoefficients;
+//import com.pedropathing.follower.DriveVectorScaler;
+//import com.pedropathing.follower.FollowerConstants;
 //import com.qualcomm.robotcore.hardware.DcMotor;
 //import com.qualcomm.robotcore.hardware.DcMotorEx;
 //import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -56,7 +56,6 @@
 //import com.pedropathing.pathgen.Point;
 //import com.pedropathing.pathgen.Vector;
 //import com.pedropathing.util.DashboardPoseTracker;
-//import com.pedropathing.util.Drawing;
 //import com.pedropathing.util.FilteredPIDFController;
 //import com.pedropathing.util.KalmanFilter;
 //import com.pedropathing.util.PIDFController;
@@ -96,28 +95,29 @@
 //
 //    private PathChain currentPathChain;
 //
-//    private int BEZIER_CURVE_SEARCH_LIMIT;
-//    private int AVERAGED_VELOCITY_SAMPLE_NUMBER;
+//    private final int BEZIER_CURVE_SEARCH_LIMIT = FollowerConstants.BEZIER_CURVE_SEARCH_LIMIT;
+//    private final int AVERAGED_VELOCITY_SAMPLE_NUMBER = FollowerConstants.AVERAGED_VELOCITY_SAMPLE_NUMBER;
 //
 //    private int chainIndex;
 //
 //    private long[] pathStartTimes;
 //
+//
 //    private double maxPower = 1;
 //    private double oldMaxPower = 1;
+//    private double globalMaxPower = 1;
 //
 //    private boolean followingPathChain;
 //    private boolean holdingPosition;
-//    private boolean isBusy, isTurning;
+//    private boolean isBusy;
 //    private boolean reachedParametricPathEnd;
 //    private boolean holdPositionAtEnd;
 //    private boolean teleopDrive;
 //
-//    private double globalMaxPower = 1;
 //    private double previousSecondaryTranslationalIntegral;
 //    private double previousTranslationalIntegral;
-//    private double holdPointTranslationalScaling;
-//    private double holdPointHeadingScaling;
+//    private double holdPointTranslationalScaling = FollowerConstants.holdPointTranslationalScaling;
+//    private double holdPointHeadingScaling = FollowerConstants.holdPointHeadingScaling;
 //    public double driveError;
 //    public double headingError;
 //
@@ -142,22 +142,21 @@
 //    public Vector centripetalVector;
 //    public Vector correctiveVector;
 //
-//    private double centripetalScaling;
+//    private double centripetalScaling = FollowerConstants.centripetalScaling;
 //
-//    private PIDFController secondaryTranslationalPIDF;
-//    private PIDFController secondaryTranslationalIntegral;
-//    private PIDFController translationalPIDF;
-//    private PIDFController translationalIntegral;
-//    private PIDFController secondaryHeadingPIDF;
-//    private PIDFController headingPIDF;
-//    private FilteredPIDFController secondaryDrivePIDF;
-//    private FilteredPIDFController drivePIDF;
+//    private PIDFController secondaryTranslationalPIDF = new PIDFController(FollowerConstants.secondaryTranslationalPIDFCoefficients);
+//    private PIDFController secondaryTranslationalIntegral = new PIDFController(FollowerConstants.secondaryTranslationalIntegral);
+//    private PIDFController translationalPIDF = new PIDFController(FollowerConstants.translationalPIDFCoefficients);
+//    private PIDFController translationalIntegral = new PIDFController(FollowerConstants.translationalIntegral);
+//    private PIDFController secondaryHeadingPIDF = new PIDFController(FollowerConstants.secondaryHeadingPIDFCoefficients);
+//    private PIDFController headingPIDF = new PIDFController(FollowerConstants.headingPIDFCoefficients);
+//    private FilteredPIDFController secondaryDrivePIDF = new FilteredPIDFController(FollowerConstants.secondaryDrivePIDFCoefficients);
+//    private FilteredPIDFController drivePIDF = new FilteredPIDFController(FollowerConstants.drivePIDFCoefficients);
 //
-//    private KalmanFilter driveKalmanFilter;
+//    private KalmanFilter driveKalmanFilter = new KalmanFilter(FollowerConstants.driveKalmanFilterParameters);
 //    private double[] driveErrors;
 //    private double rawDriveError;
 //    private double previousRawDriveError;
-//    private double turnHeadingErrorThreshold;
 //
 //    public static boolean drawOnDashboard = true;
 //    public static boolean useTranslational = true;
@@ -188,9 +187,8 @@
 //     * This creates a new Follower given a HardwareMap.
 //     * @param hardwareMap HardwareMap required
 //     */
-//    public Follower(HardwareMap hardwareMap, Class<?> FConstants, Class<?> LConstants) {
+//    public Follower(HardwareMap hardwareMap) {
 //        this.hardwareMap = hardwareMap;
-//        setupConstants(FConstants, LConstants);
 //        initialize();
 //    }
 //
@@ -199,34 +197,9 @@
 //     * @param hardwareMap HardwareMap required
 //     * @param localizer the localizer you wish to use
 //     */
-//    public Follower(HardwareMap hardwareMap, Localizer localizer, Class<?> FConstants, Class<?> LConstants) {
+//    public Follower(HardwareMap hardwareMap, Localizer localizer) {
 //        this.hardwareMap = hardwareMap;
-//        setupConstants(FConstants, LConstants);
 //        initialize(localizer);
-//    }
-//
-//    /**
-//     * Setup constants for the Follower.
-//     * @param FConstants the constants for the Follower
-//     * @param LConstants the constants for the Localizer
-//     */
-//    public void setupConstants(Class<?> FConstants, Class<?> LConstants) {
-//        Constants.setConstants(FConstants, LConstants);
-//        BEZIER_CURVE_SEARCH_LIMIT = FollowerConstants.BEZIER_CURVE_SEARCH_LIMIT;
-//        AVERAGED_VELOCITY_SAMPLE_NUMBER = FollowerConstants.AVERAGED_VELOCITY_SAMPLE_NUMBER;
-//        holdPointTranslationalScaling = FollowerConstants.holdPointTranslationalScaling;
-//        holdPointHeadingScaling = FollowerConstants.holdPointHeadingScaling;
-//        centripetalScaling = FollowerConstants.centripetalScaling;
-//        secondaryTranslationalPIDF = new PIDFController(FollowerConstants.secondaryTranslationalPIDFCoefficients);
-//        secondaryTranslationalIntegral = new PIDFController(FollowerConstants.secondaryTranslationalIntegral);
-//        translationalPIDF = new PIDFController(FollowerConstants.translationalPIDFCoefficients);
-//        translationalIntegral = new PIDFController(FollowerConstants.translationalIntegral);
-//        secondaryHeadingPIDF = new PIDFController(FollowerConstants.secondaryHeadingPIDFCoefficients);
-//        headingPIDF = new PIDFController(FollowerConstants.headingPIDFCoefficients);
-//        secondaryDrivePIDF = new FilteredPIDFController(FollowerConstants.secondaryDrivePIDFCoefficients);
-//        drivePIDF = new FilteredPIDFController(FollowerConstants.drivePIDFCoefficients);
-//        driveKalmanFilter = new KalmanFilter(FollowerConstants.driveKalmanFilterParameters);
-//        turnHeadingErrorThreshold = FollowerConstants.turnHeadingErrorThreshold;
 //    }
 //
 //    /**
@@ -642,6 +615,15 @@
 //                    drivePowers = driveVectorScaler.getDrivePowers(MathFunctions.scalarMultiplyVector(getTranslationalCorrection(), holdPointTranslationalScaling), MathFunctions.scalarMultiplyVector(getHeadingVector(), holdPointHeadingScaling), new Vector(), poseUpdater.getPose().getHeading());
 //
 //                    for (int i = 0; i < motors.size(); i++) {
+//                        if (Math.abs(motors.get(i).getPower() - drivePowers[i]) > motorCachingThreshold) {
+//                            motors.get(i).setPower(drivePowers[i] * (idealVoltage / voltage));
+//                        }
+//                    }
+//                    closestPose = currentPath.getClosestPoint(poseUpdater.getPose(), 1);
+//
+//                    drivePowers = driveVectorScaler.getDrivePowers(MathFunctions.scalarMultiplyVector(getTranslationalCorrection(), holdPointTranslationalScaling), MathFunctions.scalarMultiplyVector(getHeadingVector(), holdPointHeadingScaling), new Vector(), poseUpdater.getPose().getHeading());
+//
+//                    for (int i = 0; i < motors.size(); i++) {
 //                        if (Math.abs(motors.get(i).getPower() - drivePowers[i]) > FollowerConstants.motorCachingThreshold) {
 //                            double voltageNormalized = getVoltageNormalized();
 //
@@ -652,28 +634,30 @@
 //                            }
 //                        }
 //                    }
-//
-//                    if(headingError < turnHeadingErrorThreshold && isTurning) {
-//                        isTurning = false;
-//                        isBusy = false;
-//                    }
 //                } else {
 //                    if (isBusy) {
 //                        closestPose = currentPath.getClosestPoint(poseUpdater.getPose(), BEZIER_CURVE_SEARCH_LIMIT);
 //
 //                        if (followingPathChain) updateCallbacks();
 //
+//                        double voltage = TurtleRobot.vSensor.getVoltage();
+//                        if (voltage <= criticalVoltage) {
+//                            if (oldMaxPower == 0) {
+//                                oldMaxPower = maxPower;
+//                            }
+//                            setMaxPower(criticalVoltageDrivePower);
+//                        } else {
+//                            if (oldMaxPower != 0) {
+//                                setMaxPower(oldMaxPower);
+//                                oldMaxPower = 0;
+//                            }
+//                        }
+//
 //                        drivePowers = driveVectorScaler.getDrivePowers(getCorrectiveVector(), getHeadingVector(), getDriveVector(), poseUpdater.getPose().getHeading());
 //
 //                        for (int i = 0; i < motors.size(); i++) {
-//                            if (Math.abs(motors.get(i).getPower() - drivePowers[i]) > FollowerConstants.motorCachingThreshold) {
-//                                double voltageNormalized = getVoltageNormalized();
-//
-//                                if (useVoltageCompensationInAuto) {
-//                                    motors.get(i).setPower(drivePowers[i] * voltageNormalized);
-//                                } else {
-//                                    motors.get(i).setPower(drivePowers[i]);
-//                                }
+//                            if (Math.abs(motors.get(i).getPower() - drivePowers[i]) > motorCachingThreshold) {
+//                                motors.get(i).setPower(drivePowers[i] * (idealVoltage / voltage));
 //                            }
 //                        }
 //                    }
@@ -1212,9 +1196,6 @@
 //        telemetry.addData("velocity heading", getVelocity().getTheta());
 //        driveKalmanFilter.debug(telemetry);
 //        telemetry.update();
-//        if (drawOnDashboard) {
-//            Drawing.drawDebug(this);
-//        }
 //    }
 //
 //    /**
@@ -1286,12 +1267,6 @@
 //     * Draws everything in the debug() method on the dashboard
 //     */
 //
-//    public void drawOnDashBoard() {
-//        if (drawOnDashboard) {
-//            Drawing.drawDebug(this);
-//        }
-//    }
-//
 //    public boolean isLocalizationNAN() {
 //        return poseUpdater.getLocalizer().isNAN();
 //    }
@@ -1333,8 +1308,6 @@
 //    public void turn(double radians, boolean isLeft) {
 //        Pose temp = new Pose(getPose().getX(), getPose().getY(), getPose().getHeading() + (isLeft ? radians : -radians));
 //        holdPoint(temp);
-//        isTurning = true;
-//        isBusy = true;
 //    }
 //
 //    /** Turns to a specific heading
@@ -1342,8 +1315,6 @@
 //     */
 //    public void turnTo(double radians) {
 //        holdPoint(new Pose(getPose().getX(), getPose().getY(), Math.toRadians(radians)));
-//        isTurning = true;
-//        isBusy = true;
 //    }
 //
 //    /** Turns to a specific heading in degrees
@@ -1359,104 +1330,5 @@
 //     */
 //    public void turnDegrees(double degrees, boolean isLeft) {
 //        turn(Math.toRadians(degrees), isLeft);
-//    }
-//
-//    public boolean isTurning() {
-//        return isTurning;
-//    }
-//
-//    /**
-//     * This will update the PIDF coefficients for primary Heading PIDF mid run
-//     * can be used between paths
-//     *
-//     * @param set PIDF coefficients you would like to set.
-//     */
-//    public void setHeadingPIDF(CustomPIDFCoefficients set){
-//        headingPIDF.setCoefficients(set);
-//    }
-//
-//    /**
-//     * This will update the PIDF coefficients for primary Translational PIDF mid run
-//     * can be used between paths
-//     *
-//     * @param set PIDF coefficients you would like to set.
-//     */
-//    public void setTranslationalPIDF(CustomPIDFCoefficients set){
-//        translationalPIDF.setCoefficients(set);
-//    }
-//
-//    /**
-//     * This will update the PIDF coefficients for primary Drive PIDF mid run
-//     * can be used between paths
-//     *
-//     * @param set PIDF coefficients you would like to set.
-//     */
-//    public void setDrivePIDF(CustomFilteredPIDFCoefficients set){
-//        drivePIDF.setCoefficients(set);
-//    }
-//
-//    /**
-//     * This will update the PIDF coefficients for secondary Heading PIDF mid run
-//     * can be used between paths
-//     *
-//     * @param set PIDF coefficients you would like to set.
-//     */
-//    public void setSecondaryHeadingPIDF(CustomPIDFCoefficients set){
-//        secondaryHeadingPIDF.setCoefficients(set);
-//    }
-//
-//    /**
-//     * This will update the PIDF coefficients for secondary Translational PIDF mid run
-//     * can be used between paths
-//     *
-//     * @param set PIDF coefficients you would like to set.
-//     */
-//    public void setSecondaryTranslationalPIDF(CustomPIDFCoefficients set){
-//        secondaryTranslationalPIDF.setCoefficients(set);
-//    }
-//
-//    /**
-//     * This will update the PIDF coefficients for secondary Drive PIDF mid run
-//     * can be used between paths
-//     *
-//     * @param set PIDF coefficients you would like to set.
-//     */
-//    public void setSecondaryDrivePIDF(CustomFilteredPIDFCoefficients set){
-//        secondaryDrivePIDF.setCoefficients(set);
-//    }
-//
-//    /**
-//     * Checks if the robot is at a certain point within certain tolerances
-//     * @param point Point to compare with the current point
-//     * @param xTolerance Tolerance for the x position
-//     * @param yTolerance Tolerance for the y position
-//     */
-//    public boolean atPoint(Point point, double xTolerance, double yTolerance) {
-//        return Math.abs(point.getX() - getPose().getX()) < xTolerance && Math.abs(point.getY() - getPose().getY()) < yTolerance;
-//    }
-//
-//    /**
-//     * Checks if the robot is at a certain pose within certain tolerances
-//     * @param pose Pose to compare with the current pose
-//     * @param xTolerance Tolerance for the x position
-//     * @param yTolerance Tolerance for the y position
-//     * @param headingTolerance Tolerance for the heading
-//     */
-//    public boolean atPose(Pose pose, double xTolerance, double yTolerance, double headingTolerance) {
-//        return Math.abs(pose.getX() - getPose().getX()) < xTolerance && Math.abs(pose.getY() - getPose().getY()) < yTolerance && Math.abs(pose.getHeading() - getPose().getHeading()) < headingTolerance;
-//    }
-//
-//    /**
-//     * Checks if the robot is at a certain pose within certain tolerances
-//     * @param pose Pose to compare with the current pose
-//     * @param xTolerance Tolerance for the x position
-//     * @param yTolerance Tolerance for the y position
-//     */
-//    public boolean atPose(Pose pose, double xTolerance, double yTolerance) {
-//        return Math.abs(pose.getX() - getPose().getX()) < xTolerance && Math.abs(pose.getY() - getPose().getY()) < yTolerance;
-//    }
-//
-//    public double getHeadingError() {
-//        return headingError;
 //    }
 //}

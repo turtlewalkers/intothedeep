@@ -1,20 +1,17 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.tuners_tests.automatic;
+package pedroPathing.tuners_tests.automatic;
 
-import static com.pedropathing.follower.FollowerConstants.leftFrontMotorDirection;
 import static com.pedropathing.follower.FollowerConstants.leftFrontMotorName;
-import static com.pedropathing.follower.FollowerConstants.leftRearMotorDirection;
 import static com.pedropathing.follower.FollowerConstants.leftRearMotorName;
-import static com.pedropathing.follower.FollowerConstants.rightFrontMotorDirection;
 import static com.pedropathing.follower.FollowerConstants.rightFrontMotorName;
-import static com.pedropathing.follower.FollowerConstants.rightRearMotorDirection;
 import static com.pedropathing.follower.FollowerConstants.rightRearMotorName;
+import static com.pedropathing.follower.FollowerConstants.leftFrontMotorDirection;
+import static com.pedropathing.follower.FollowerConstants.leftRearMotorDirection;
+import static com.pedropathing.follower.FollowerConstants.rightFrontMotorDirection;
+import static com.pedropathing.follower.FollowerConstants.rightRearMotorDirection;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.pedropathing.localization.PoseUpdater;
-import com.pedropathing.pathgen.MathFunctions;
-import com.pedropathing.pathgen.Vector;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -23,13 +20,16 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.pedropathing.localization.PoseUpdater;
+import com.pedropathing.pathgen.MathFunctions;
+import com.pedropathing.pathgen.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
+import pedroPathing.constants.FConstants;
+import pedroPathing.constants.LConstants;
 
 /**
  * This is the ForwardVelocityTuner autonomous follower OpMode. This runs the robot forwards at max
@@ -72,8 +72,7 @@ public class ForwardVelocityTuner extends OpMode {
      */
     @Override
     public void init() {
-        Constants.setConstants(FConstants.class, LConstants.class);
-        poseUpdater = new PoseUpdater(hardwareMap);
+        poseUpdater = new PoseUpdater(hardwareMap, FConstants.class, LConstants.class);
 
         leftFront = hardwareMap.get(DcMotorEx.class, leftFrontMotorName);
         leftRear = hardwareMap.get(DcMotorEx.class, leftRearMotorName);

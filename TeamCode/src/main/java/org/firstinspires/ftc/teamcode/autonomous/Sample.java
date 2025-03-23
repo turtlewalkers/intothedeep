@@ -7,11 +7,13 @@ import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKECLOSE;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.OUTTAKEOPEN;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_ARM;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_DROP_SMART;
+import static org.firstinspires.ftc.teamcode.teleop.Teleop.SPEC_SERVO_DROP;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.TX_PICKUP_ARMSERVO;
 import static org.firstinspires.ftc.teamcode.teleop.Teleop.TX_PICKUP_SMARTSERVO;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.util.Drawing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -20,6 +22,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.pedropathing.localization.Pose;
 import com.pedropathing.follower.Follower;
+//import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.Point;
@@ -67,22 +70,23 @@ public class Sample extends LinearOpMode {
         timeElapsed = new ElapsedTime();
 
         // go to basket
-        path1 = new Path(new BezierCurve(new Point(10,104,Point.CARTESIAN), new Point(17,120,Point.CARTESIAN)));
-        path1.setConstantHeadingInterpolation(-Math.PI / 4);
+        path1 = new Path(new BezierLine(new Point(10,104,Point.CARTESIAN), new Point(17,124,Point.CARTESIAN)));
+        path1.setConstantHeadingInterpolation(-Math.PI / 6);
         // go to position for dropping sample
-        path2 = new Path(new BezierCurve(new Point(15,120,Point.CARTESIAN), new Point(17,125,Point.CARTESIAN)));
-        path2.setConstantHeadingInterpolation(-Math.PI / 4);
+        path2 = new Path(new BezierLine(new Point(15,120,Point.CARTESIAN), new Point(17,124,Point.CARTESIAN)));
+        path2.setConstantHeadingInterpolation(-Math.PI / 6);
         // first one
-        path3 = new Path(new BezierCurve(new Point(16,125,Point.CARTESIAN), new Point(18, 121, Point.CARTESIAN)));
+        path3 = new Path(new BezierLine(new Point(16,125,Point.CARTESIAN), new Point(18, 123, Point.CARTESIAN)));
         path3.setConstantHeadingInterpolation(0);
-        path4 = new Path(new BezierCurve(new Point(23,125, Point.CARTESIAN), new Point(18,124, Point.CARTESIAN)));
-        path4.setConstantHeadingInterpolation(-Math.PI / 4);
+        path4 = new Path(new BezierLine(new Point(23,125, Point.CARTESIAN), new Point(18,124, Point.CARTESIAN)));
+        path4.setConstantHeadingInterpolation(-Math.PI / 6);
         // second one
-        path5 = new Path(new BezierCurve(new Point(16, 125, Point.CARTESIAN), new Point(18, 127, Point.CARTESIAN)));
+        path5 = new Path(new BezierLine(new Point(16, 125, Point.CARTESIAN), new Point(16.5, 126, Point.CARTESIAN)));
         path5.setConstantHeadingInterpolation(0);
         // third one
-        path6 = new Path(new BezierCurve(new Point(16, 125, Point.CARTESIAN), new Point(20, 128, Point.CARTESIAN)));
-        path6.setConstantHeadingInterpolation(Math.PI / 6);
+        path6 = new Path(new BezierLine(new Point(16, 125, Point.CARTESIAN), new Point(18, 127, Point.CARTESIAN)));
+        path6.setConstantHeadingInterpolation(Math.PI / 12);
+
         park = new Path(new BezierCurve(new Point(18, 123, Point.CARTESIAN),
                 new Point(105, 98, Point.CARTESIAN),
                 new Point(65, 98, Point.CARTESIAN)));
@@ -91,7 +95,8 @@ public class Sample extends LinearOpMode {
         waitForStart();
 
         // drop the first one
-        followPath(path2);
+        followPath(path1);
+        robot.spec.setPosition(SPEC_SERVO_DROP);
         robot.arm.setPosition(TX_PICKUP_ARMSERVO);
         robot.smartServo.setPosition(TX_PICKUP_SMARTSERVO);
         int linearSlideTargetHeight = -2350;
@@ -114,8 +119,6 @@ public class Sample extends LinearOpMode {
         robot.outtake.setPosition(OUTTAKEOPEN);
 
         sleep(200);
-
-
 
 //        followPath(path2);
 //        sleep(250);
@@ -182,6 +185,8 @@ public class Sample extends LinearOpMode {
         robot.intake.setPosition(Teleop.OPENINTAKE);
         sleep(250);
         robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
+        path2 = new Path(new BezierLine(new Point(17,123,Point.CARTESIAN), new Point(17,124,Point.CARTESIAN)));
+        path2.setConstantHeadingInterpolation(-Math.PI / 6);
         followPath(path2);
         linearSlideTargetHeight = -2350;
         SLIDE_HEIGHT = -2350;
@@ -263,6 +268,8 @@ public class Sample extends LinearOpMode {
         sleep(500);
         robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
         sleep(250);
+        path2 = new Path(new BezierLine(new Point(17,126,Point.CARTESIAN), new Point(17,128,Point.CARTESIAN)));
+        path2.setConstantHeadingInterpolation(-Math.PI / 6);
 
         followPath(path2);
         sleep(250);
@@ -346,8 +353,11 @@ public class Sample extends LinearOpMode {
         sleep(250);
         robot.outtake.setPosition(Teleop.OUTTAKECLOSE);
         sleep(200);
+        path2 = new Path(new BezierLine(new Point(18,127,Point.CARTESIAN), new Point(18,127,Point.CARTESIAN)));
+        path2.setConstantHeadingInterpolation(-Math.PI / 6);
 
         followPath(path2);
+
         linearSlideTargetHeight = -2350;
         SLIDE_HEIGHT = -2350;
         robot.leftSlide.setTargetPosition(SLIDE_HEIGHT);

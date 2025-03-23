@@ -55,15 +55,12 @@ public class TurtleRobot {
          * Motors:
              * 0 - rightSlide
              * 1 - leftSlide
-             * 2 - leftFront
-             * 3 - rightFront
+             * 2 - rightFront
+             * 3 - leftFront
          * Servos:
-             * 0 - top_servo
-             * 1 - bottom_left
-             * 2 - bottom_right
-             * 3 - right_horizontal_slide
-             * 4 - left_horizontal_slide
-             * 5 - intake_claw
+             * 0 - intake_claw
+             * 3 - light
+             * 5 - top_servo
          * Expansion Hub:
          * Motors:
              * 0 - rightBack (strafe odo)
@@ -72,8 +69,9 @@ public class TurtleRobot {
              * 3 - left_actuator (left odo)
              * 4 - spec
          * Servos:
+             * 0 - outake_claw
              * 1 - smart_servo
-             * 3 - outake_claw
+             * 4 - spec
              * 5 - arm_servo
          * Servo Hub:
              * 0 - bottom_left
@@ -86,7 +84,7 @@ public class TurtleRobot {
         hwMap = ahwMap;
         // Define and Initialize Motors
         leftFront = hwMap.get(DcMotorEx.class, "leftFront");
-        leftBack = hwMap.get(DcMotorEx.class, "leftBack");
+        leftBack = hwMap.get(DcMotorEx.class,   "leftBack");
         rightFront = hwMap.get(DcMotorEx.class, "rightFront");
         rightBack = hwMap.get(DcMotorEx.class, "rightBack");
         leftSlide = hwMap.get(DcMotorEx.class, "leftSlide");
@@ -113,8 +111,9 @@ public class TurtleRobot {
         leftBack.setDirection(DcMotorEx.Direction.REVERSE);
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         rightBack.setDirection(DcMotorEx.Direction.FORWARD);
-        leftSlide.setDirection(DcMotorEx.Direction.FORWARD);
-        rightSlide.setDirection(DcMotorEx.Direction.REVERSE);
+        leftSlide.setDirection(DcMotorEx.Direction.REVERSE);
+
+        rightSlide.setDirection(DcMotorEx.Direction.FORWARD);
         leftActuator.setDirection(DcMotorEx.Direction.FORWARD);
         rightActuator.setDirection(DcMotorEx.Direction.REVERSE);
 
